@@ -1,10 +1,4 @@
 /**
- * @typedef {object} DebouncerOpts
- * @prop {number} [timeoutMs] The debounce window, in milliseconds.
- */
-
-/**
- * @description
  * A class which allows for multiple actions to be coalesced within a given
  * time window.
  *
@@ -13,36 +7,21 @@
 export class Debouncer {
 	/**
 	 * @param {T} callback - The function to call once any pending debounce interval expires.
-	 * @param {number | DebouncerOpts} [timeoutOrOpts] - Debounce timeout in milliseconds, or options
+	 * @param {number} [debounceWindow] - Debounce window in milliseconds, or options object
 	 */
-	constructor(callback, timeoutOrOpts) {
+	constructor(callback, debounceWindow) {
 		if (typeof callback !== 'function') {
 			throw new Error(`Callback must be a function (received: ${typeof callback})`);
 		}
 
+		if (typeof debounceWindow === 'number' && debounceWindow < 0) {
+			throw new Error(`'debounceWindow' must not be negative (received: ${debounceWindow})`);
+		} else if (typeof debounceWindow !== 'undefined' && typeof debounceWindow !== 'number') {
+			throw new Error(`If provided, 'debounceWindow' must be number (received: ${typeof debounceWindow}})`);
+		}
+
 		this._callback = callback;
-
-		/** @type {DebouncerOpts} */
-		let inOpts = {};
-
-		if (typeof timeoutOrOpts === 'number') {
-			inOpts.timeoutMs = timeoutOrOpts;
-		} else if (typeof timeoutOrOpts === 'object') {
-			inOpts = {
-				...timeoutOrOpts,
-			};
-		}
-
-		if (typeof inOpts.timeoutMs === 'number' && inOpts.timeoutMs < 0) {
-			throw new Error(`opts.timeoutMs must not be negative (received: ${inOpts.timeoutMs})`);
-		} else if (typeof inOpts.timeoutMs !== 'undefined' && typeof inOpts.timeoutMs !== 'number') {
-			throw new Error(`If provided, opts.timeoutMs must be number (received: ${typeof inOpts.timeoutMs}})`);
-		}
-
-		this._opts = {
-			timeoutMs: 0,
-			...inOpts,
-		};
+		this._debounceWindow = debounceWindow || 0;
 	}
 
 	/**
@@ -64,6 +43,7 @@ export class Debouncer {
 	 */
 	cancel() {
 		clearTimeout(this._timeoutID);
+
 		this._timeoutID = null;
 	}
 
@@ -73,6 +53,7 @@ export class Debouncer {
 	flush() {
 		if (this._timeoutID) {
 			this.cancel();
+
 			this._callback(...this._args);
 		}
 	}
@@ -81,14 +62,10 @@ export class Debouncer {
 	 * @private
 	 */
 	run() {
-		if (typeof this._timeoutID === 'number') {
-			throw new Error('run() called while job pending; previous job should have been canceled');
-		}
-
 		this._timeoutID = setTimeout(() => {
 			this.cancel();
 
 			this._callback(...this._args);
-		}, this._opts.timeoutMs);
+		}, this._debounceWindow);
 	}
 }

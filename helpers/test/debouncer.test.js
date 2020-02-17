@@ -13,12 +13,12 @@ describe('Debouncer', () => {
 			}
 		});
 
-		it('fails if timeoutMs is negative', () => {
+		it('fails if debounceWindow is negative', () => {
 			try {
 				new Debouncer(stub(), -1);
 				assert(false, 'should have thrown');
 			} catch (e) {
-				expect(e.message).to.equal('opts.timeoutMs must not be negative (received: -1)');
+				expect(e.message).to.equal('\'debounceWindow\' must not be negative (received: -1)');
 			}
 		});
 	});
@@ -40,14 +40,13 @@ describe('Debouncer', () => {
 
 			expect(cb.notCalled).to.be.true;
 
-			this.clock.tick(600);
+			this.clock.tick(500);
 
 			expect(cb.calledOnce).to.be.true;
 		});
 
 		it('calls the debounced function with arguments after the correct interval after a single tap', function() {
 			const cb = spy();
-
 			const debouncer = new Debouncer(cb, 500);
 
 			debouncer.tap('foo', 'bar', 100);
@@ -58,7 +57,7 @@ describe('Debouncer', () => {
 			expect(cb.getCall(0).calledWith('foo', 'bar', 100)).to.be.true;
 		});
 
-		it('resets the debounce interval on successive taps', function() {
+		it('restarts the debounce interval on successive taps within the window', function() {
 			const cb = spy();
 			const debouncer = new Debouncer(cb, 500);
 
@@ -76,7 +75,6 @@ describe('Debouncer', () => {
 
 		it('calls the debounced function with the most recent arguments after multiple taps', function() {
 			const cb = spy();
-
 			const debouncer = new Debouncer(cb, 500);
 
 			for (let i = 1; i <= 10; i++) {
