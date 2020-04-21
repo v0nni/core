@@ -1,5 +1,6 @@
 let timeoutId = null;
 let container = null;
+let batch = null;
 
 export function announce(message) {
 	if (!message) return;
@@ -21,13 +22,22 @@ export function announce(message) {
 		document.body.appendChild(container);
 	}
 
-	/* Need to give browser enough time to create the live region so that it will
-	treat the change as an update. Firefox sometimes ignores changes if the region
-	and update are made too quickly in succession. RequestAnimationFrame is not
-	sufficient here. */
-	setTimeout(() => {
-		container.appendChild(document.createTextNode(message));
-	}, 100);
+	if (batch === null) {
+		/* Need to give browser enough time to create the live region so that it will
+		treat the change as an update. Firefox sometimes ignores changes if the region
+		and update are made too quickly in succession. RequestAnimationFrame is not
+		sufficient here. */
+		setTimeout(() => {
+			container.innerHTML = '';
+			for (let i = 0; i < batch.length; i++) {
+				container.appendChild(document.createTextNode(batch[i]));
+			}
+			batch = null;
+		}, 100);
+		batch = [message];
+	} else {
+		batch.push(message);
+	}
 
 	/* Need to purge old messages so that they are not discovered by screen readers
 	using virtual cursor, but we need to give the browser ample time to hand off
