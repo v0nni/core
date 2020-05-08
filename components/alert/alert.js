@@ -1,6 +1,7 @@
 import '../button/button-icon.js';
 import '../button/button-subtle.js';
 import '../colors/colors.js';
+import '../expand-collapse/expand-collapse.js';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { bodyCompactStyles } from '../typography/styles.js';
 import { LocalizeStaticMixin } from '../../mixins/localize-static-mixin.js';
@@ -13,7 +14,9 @@ class Alert extends LocalizeStaticMixin(RtlMixin(LitElement)) {
 			buttonText: { type: String, attribute: 'button-text' },
 			hasCloseButton: { type: Boolean, attribute: 'has-close-button' },
 			subtext: { type: String },
-			type: { type: String, reflect: true }
+			type: { type: String, reflect: true },
+			collapsible: { type: Boolean },
+			_collapsed: { type: Boolean }
 		};
 	}
 	static get styles() {
@@ -120,8 +123,10 @@ class Alert extends LocalizeStaticMixin(RtlMixin(LitElement)) {
 
 	constructor() {
 		super();
+		this.collapsible = false;
 		this.hasCloseButton = false;
 		this.type = 'default';
+		this._collapsed = true;
 	}
 
 	close() {
@@ -141,12 +146,23 @@ class Alert extends LocalizeStaticMixin(RtlMixin(LitElement)) {
 		return html`
 			<div class="d2l-alert-highlight"></div>
 			<div class="d2l-alert-text">
-				<slot></slot>
-				${this.subtext ? html`<p class="d2l-body-compact d2l-alert-subtext">${this.subtext}</p>` : null}
+				<div class="d2l-alert-primary">
+					<slot></slot>
+				</div>
+				<d2l-expand-collapse ?expanded=${!this._collapsed}>
+					<slot name="secondary">
+						${this.subtext ? html`<p class="d2l-body-compact d2l-alert-subtext">${this.subtext}</p>` : null}
+					</slot>
+				</d2l-expand-collapse>
 			</div>
 			${this.buttonText && this.buttonText.length > 0 ? html`<d2l-button-subtle class="d2l-alert-action" text=${this.buttonText} @click=${this._onButtonClick}></d2l-button-subtle>` : null}
 			${this.hasCloseButton ? html`<d2l-button-icon class="d2l-alert-action" icon="d2l-tier1:close-default" text="${this.localize('close')}" @click=${this.close}></d2l-button-icon>` : null}
+			${this.collapsible ? html`<d2l-button-icon class="d2l-alert-action" icon=${this._collapsed ? 'tier1:arrow-expand-small' : 'tier1:arrow-collapse-small'} @click=${this._toggleCollapsed}></d2l-button-icon>` : null}
 		`;
+	}
+
+	_toggleCollapsed() {
+		this._collapsed = !this._collapsed;
 	}
 }
 
