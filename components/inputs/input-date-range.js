@@ -114,6 +114,7 @@ class InputDateRange extends FormElementMixin(RtlMixin(LocalizeCoreElement(LitEl
 			<d2l-input-fieldset label="${ifDefined(this.label)}" ?label-hidden="${this.labelHidden}">
 				<d2l-input-date
 					@change="${this._handleChange}"
+					@d2l-form-element-should-validate="${this._shouldValidate}"
 					class="d2l-input-date-range-start"
 					?disabled="${this.disabled}"
 					?invalid="${this.validationError ? true : false}"
@@ -124,6 +125,7 @@ class InputDateRange extends FormElementMixin(RtlMixin(LocalizeCoreElement(LitEl
 				</d2l-input-date>
 				<d2l-input-date
 					@change="${this._handleChange}"
+					@d2l-form-element-should-validate="${this._shouldValidate}"
 					class="d2l-input-date-range-end"
 					?disabled="${this.disabled}"
 					?invalid="${this.validationError ? true : false}"
@@ -170,6 +172,10 @@ class InputDateRange extends FormElementMixin(RtlMixin(LocalizeCoreElement(LitEl
 			'change',
 			{ bubbles: true, composed: false }
 		));
+	}
+
+	_shouldValidate(e) {
+		e.preventDefault();
 	}
 
 	_validateRange(e) {
