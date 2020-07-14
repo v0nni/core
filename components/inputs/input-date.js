@@ -229,6 +229,12 @@ class InputDate extends FormElementMixin(LocalizeCoreElement(LitElement)) {
 		if (this._textInput) this._textInput.focus();
 	}
 
+	requestValidate() {
+		if (this.dispatchEvent(new CustomEvent('d2l-form-element-should-validate', { bubbles: true, cancelable: true }))) {
+			this.validate();
+		}
+	}
+
 	get validationMessageRangeOverflow() {
 		let failureText = '';
 		if (this.minValue && this.maxValue) {
@@ -365,7 +371,7 @@ class InputDate extends FormElementMixin(LocalizeCoreElement(LitElement)) {
 			rangeUnderflow: dateInISO && this.minValue && getDateFromISODate(dateInISO).getTime() < getDateFromISODate(this.minValue).getTime(),
 			rangeOverflow: dateInISO && this.maxValue && getDateFromISODate(dateInISO).getTime() > getDateFromISODate(this.maxValue).getTime()
 		});
-		await this.requestValidate();
+		this.requestValidate();
 		this.value = dateInISO;
 		this.dispatchEvent(new CustomEvent(
 			'change',

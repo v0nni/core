@@ -90,6 +90,7 @@ export const FormElementMixin = superclass => class extends LocalizeCoreElement(
 
 		this.addEventListener('d2l-validation-custom-connected', this._validationCustomConnected);
 		this.addEventListener('d2l-validation-custom-disconnected', this._validationCustomDisconnected);
+		this.shadowRoot.addEventListener('d2l-form-element-should-validate', this._formElementShouldValidate);
 	}
 
 	checkValidity() {
@@ -109,7 +110,11 @@ export const FormElementMixin = superclass => class extends LocalizeCoreElement(
 		return this.localize('components.form-element-mixin.defaultFieldLabel');
 	}
 
-	async requestValidate() { return; }
+	requestValidate() {
+		if (this.dispatchEvent(new CustomEvent('d2l-form-element-should-validate', { bubbles: true, cancelable: true }))) {
+			this.validate();
+		}
+	}
 
 	setCustomValidity(message) {
 		this._validity = new FormElementValidityState({ customError: true });
@@ -228,6 +233,10 @@ export const FormElementMixin = superclass => class extends LocalizeCoreElement(
 
 	get validity() {
 		return this._validity;
+	}
+
+	_formElementShouldValidate(e) {
+		e.preventDefault();
 	}
 
 	_validationCustomConnected(e) {
