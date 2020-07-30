@@ -10,7 +10,8 @@ const focusableElements = {
 	isindex: true,
 	object: true,
 	select: true,
-	textarea: true
+	textarea: true,
+	'd2l-input-text': true
 };
 
 export function getComposedActiveElement() {
