@@ -66,7 +66,6 @@ class TemplatePrimarySecondary extends LitElement {
 			main {
 				grid-area: primary;
 				overflow-x: hidden;
-
 			}
 			:host([primary-overflow="hidden"]) main {
 				overflow: hidden;
