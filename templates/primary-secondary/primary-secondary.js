@@ -6,6 +6,11 @@ const dividerWidth = 5;
 const minPanelWidth = 320;
 const collapseWidth = minPanelWidth / 2;
 
+const keyCodes = Object.freeze({
+	LEFT: 37,
+	RIGHT: 39
+});
+
 /**
  * A two panel (primary and secondary) page template with header and optional footer
  * @slot header - Page header content
@@ -81,7 +86,12 @@ class TemplatePrimarySecondary extends LitElement {
 			main {
 				grid-area: primary;
 				overflow-x: hidden;
+				transition: width 400ms cubic-bezier(0, 0.7, 0.5, 1);
 			}
+			[data-is-resizing] main {
+				transition: none;
+			}
+
 			:host([primary-overflow="hidden"]) main {
 				overflow: hidden;
 			}
@@ -172,10 +182,10 @@ class TemplatePrimarySecondary extends LitElement {
 		return html`
 			<div class="d2l-template-primary-secondary-container">
 				<header><slot name="header"></slot></header>
-				<div class="d2l-template-primary-secondary-content" data-background-shading="${this.backgroundShading}" ?data-is-collapsed=${this._isCollapsed}>
+				<div class="d2l-template-primary-secondary-content" data-background-shading="${this.backgroundShading}" ?data-is-collapsed=${this._isCollapsed} ?data-is-resizing=${this._isResizing}>
 					<main style="${styleMap(primaryStyles)}"><slot name="primary"></slot></main>
 					<div class="d2l-template-primary-secondary-divider">
-						<div tabindex="0" class="d2l-template-primary-secondary-divider-handle"  @mousedown=${this._onMouseDown}>
+						<div tabindex="0" class="d2l-template-primary-secondary-divider-handle" @mousedown=${this._onMouseDown} @keydown="${this._onKeyDown}">
 						</div>
 					</div>
 					<aside><slot name="secondary"></slot></aside>
@@ -200,6 +210,28 @@ class TemplatePrimarySecondary extends LitElement {
 		this._hasFooter = (nodes.length !== 0);
 	}
 
+	_onKeyDown(e) {
+		if (e.keyCode !== keyCodes.LEFT && e.keyCode !== keyCodes.RIGHT) {
+			return;
+		}
+		const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
+		const contentWidth = contentArea.offsetWidth;
+
+		const min = minPanelWidth;
+		const max = contentWidth - dividerWidth - minPanelWidth;
+		if (this._width === max && e.keyCode === keyCodes.RIGHT) {
+			this._isCollapsed = true;
+			return;
+		} else if (this._isCollapsed && e.keyCode === keyCodes.LEFT) {
+			this._isCollapsed = false;
+			return;
+		}
+		const delta = (max - min) / 6;
+		const direction = e.keyCode === keyCodes.LEFT ? -1 : 1;
+
+		const newWidth = this._width + delta * direction;
+		this._width = this._clampWidth(min + delta * Math.round((newWidth - min) / delta), contentWidth);
+	}
 	_onMouseDown() {
 		this._isResizing = true;
 	}
