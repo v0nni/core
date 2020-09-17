@@ -1,5 +1,10 @@
 import '../../components/colors/colors.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
+import { styleMap } from 'lit-html/directives/style-map.js';
+
+const dividerWidth = 5;
+const minPanelWidth = 320;
+const collapseWidth = minPanelWidth / 2;
 
 /**
  * A two panel (primary and secondary) page template with header and optional footer
@@ -27,7 +32,9 @@ class TemplatePrimarySecondary extends LitElement {
 			 * @type {'fullscreen'|'normal'}
 			 */
 			widthType: { type: String, attribute: 'width-type', reflect: true },
-			_hasFooter: { type: Boolean }
+			_isCollapsed: { type: Boolean },
+			_hasFooter: { type: Boolean },
+			_width: { type: Number }
 		};
 	}
 
@@ -61,12 +68,15 @@ class TemplatePrimarySecondary extends LitElement {
 			}
 			.d2l-template-primary-secondary-content {
 				display: grid;
-				grid-area: content;
 				grid-template-areas: "primary divider secondary";
-				grid-template-columns: minmax(320px, 2fr) 1px minmax(320px, 1fr);
-				grid-template-rows: auto;
 				overflow: hidden;
 				z-index: auto;
+			}
+			.d2l-template-primary-secondary-content[data-is-collapsed] {
+				grid-template-areas: "primary divider";
+			}
+			[data-is-collapsed] aside {
+				display: none;
 			}
 			main {
 				grid-area: primary;
@@ -80,6 +90,8 @@ class TemplatePrimarySecondary extends LitElement {
 				background-color: var(--d2l-color-gypsum);
 			}
 			.d2l-template-primary-secondary-divider {
+				position: relative;
+				width: ${dividerWidth}px;
 				background-color: var(--d2l-color-mica);
 				grid-area: divider;
 			}
@@ -94,6 +106,23 @@ class TemplatePrimarySecondary extends LitElement {
 				padding: 0.75rem 1rem;
 				z-index: 2; /* ensures the footer box-shadow is over main areas with background colours set */
 			}
+
+			.d2l-template-primary-secondary-divider-handle {
+				top: calc(50% - 30px);
+				left: calc(-5px);
+				position: absolute;
+				width: 15px;
+				height: 60px;
+				background-color: var(--d2l-color-mica);
+				border-radius: 5px;
+				cursor: ew-resize; /*resizer cursor*/
+			}
+
+			.d2l-template-primary-secondary-divider-handle:focus {
+				box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--d2l-color-celestine);
+				outline:none;
+			}
+
 			@media only screen and (max-width: 768px) {
 				.d2l-template-primary-secondary-container {
 					height: 100%;
@@ -116,17 +145,39 @@ class TemplatePrimarySecondary extends LitElement {
 
 	constructor() {
 		super();
+		this._onMouseMove = this._onMouseMove.bind(this);
+		this._onMouseUp = this._onMouseUp.bind(this);
+
 		this.widthType = 'fullscreen';
 		this.backgroundShading = 'none';
 	}
 
+	connectedCallback() {
+		super.connectedCallback();
+		window.addEventListener('mousemove', this._onMouseMove);
+		window.addEventListener('mouseup', this._onMouseUp);
+	}
+
+	firstUpdated(changedProperties) {
+		super.firstUpdated(changedProperties);
+
+		const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
+		const contentWidth = contentArea.offsetWidth;
+		const width = (contentWidth - dividerWidth) * (2 / 3);
+		this._width = this._clampWidth(width, contentWidth);
+	}
+
 	render() {
+		const primaryStyles = !this._isCollapsed ? { width: `${this._width}px` } : {};
 		return html`
 			<div class="d2l-template-primary-secondary-container">
 				<header><slot name="header"></slot></header>
-				<div class="d2l-template-primary-secondary-content" data-background-shading="${this.backgroundShading}">
-					<main><slot name="primary"></slot></main>
-					<div class="d2l-template-primary-secondary-divider"></div>
+				<div class="d2l-template-primary-secondary-content" data-background-shading="${this.backgroundShading}" ?data-is-collapsed=${this._isCollapsed}>
+					<main style="${styleMap(primaryStyles)}"><slot name="primary"></slot></main>
+					<div class="d2l-template-primary-secondary-divider">
+						<div tabindex="0" class="d2l-template-primary-secondary-divider-handle"  @mousedown=${this._onMouseDown}>
+						</div>
+					</div>
 					<aside><slot name="secondary"></slot></aside>
 				</div>
 				<footer ?hidden="${!this._hasFooter}">
@@ -136,10 +187,46 @@ class TemplatePrimarySecondary extends LitElement {
 		`;
 	}
 
+	_clampWidth(width, contentWidth) {
+		if (contentWidth === undefined) {
+			const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
+			contentWidth = contentArea.offsetWidth;
+		}
+		return Math.max(minPanelWidth, Math.min(width, contentWidth - dividerWidth - minPanelWidth));
+	}
+
 	_handleFooterSlotChange(e) {
 		const nodes = e.target.assignedNodes();
 		this._hasFooter = (nodes.length !== 0);
 	}
+
+	_onMouseDown() {
+		this._isResizing = true;
+	}
+
+	_onMouseMove(e) {
+		if (this._isResizing) {
+			e.preventDefault();
+			this._updateWidth(e.pageX);
+		}
+	}
+
+	_onMouseUp(e) {
+		if (this._isResizing) {
+			this._updateWidth(e.pageX);
+			this._isResizing = false;
+		}
+	}
+
+	_updateWidth(desiredWidth) {
+		const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
+		const contentWidth = contentArea.offsetWidth;
+
+		const secondaryPanelWidth = contentWidth - desiredWidth - dividerWidth;
+		this._isCollapsed = secondaryPanelWidth <= collapseWidth;
+		this._width = this._clampWidth(desiredWidth, contentWidth);
+	}
+
 }
 
 customElements.define('d2l-template-primary-secondary', TemplatePrimarySecondary);
