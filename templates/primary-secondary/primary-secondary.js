@@ -1,6 +1,7 @@
 import '../../components/colors/colors.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { registerGestureTouchMomentum } from '../../helpers/gestures.js';
 
 const dividerWidth = 5;
 const minPanelWidth = 320;
@@ -179,11 +180,13 @@ class TemplatePrimarySecondary extends LitElement {
 		window.addEventListener('mouseup', this._onMouseUp);
 		window.addEventListener('touchmove', this._onTouchMove, { passive: false });
 		window.addEventListener('touchend', this._onTouchEnd);
+
 	}
 
 	firstUpdated(changedProperties) {
 		super.firstUpdated(changedProperties);
-
+		const secondaryPanel = this.shadowRoot.querySelector('aside');
+		registerGestureTouchMomentum(secondaryPanel);
 		this.updateComplete.then(() => {
 			const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
 			const contentHeight = contentArea.offsetHeight;
@@ -202,7 +205,7 @@ class TemplatePrimarySecondary extends LitElement {
 						<div tabindex="0" class="d2l-template-primary-secondary-divider-handle" @mousedown=${this._onMouseDown} @keydown="${this._onKeyDown}">
 						</div>
 					</div>
-					<aside @touchstart=${this._onTouchStart}><slot name="secondary"></slot></aside>
+					<aside @touchstart=${this._onTouchStart} @d2l-gesture-momentum=${this._onMomentum}><slot name="secondary"></slot></aside>
 				</div>
 				<footer ?hidden="${!this._hasFooter}">
 					<div class="d2l-template-primary-secondary-footer"><slot name="footer" @slotchange="${this._handleFooterSlotChange}"></div></slot>
@@ -250,6 +253,30 @@ class TemplatePrimarySecondary extends LitElement {
 	_onKeyDown(e) {
 
 	}
+
+	_onMomentum(e) {
+		const delta = e.detail.y - this._touchStart;
+		console.log('moment delta', e.detail.y);
+
+		const minHeight = this._computeMinHeight();
+		const maxHeight = this._computeMaxHeight();
+
+		const secondaryPanel = this.shadowRoot.querySelector('aside');
+		if (delta > 0) {
+			const desiredScroll = this._scrollStart - delta;
+			secondaryPanel.scrollTop = desiredScroll;
+
+			const desiredHeight = desiredScroll - secondaryPanel.scrollTop;
+			this._height = Math.min(Math.max(this._heightStart - desiredHeight, minHeight), maxHeight);
+		} else {
+			const desiredHeight = this._heightStart + delta;
+			this._height = Math.min(Math.max(desiredHeight, minHeight), maxHeight);
+
+			const desiredScroll = desiredHeight - this._height;
+			secondaryPanel.scrollTop = this._scrollStart - desiredScroll;
+		}
+	}
+
 	_onMouseDown() {
 		this._isResizing = true;
 	}
@@ -276,7 +303,8 @@ class TemplatePrimarySecondary extends LitElement {
 	_onTouchMove(e) {
 		if (this._isSliding) {
 			const touch = e.touches[0];
-			const delta = touch.screenY - this._touchStart;
+			const delta = touch.clientY - this._touchStart;
+			console.log('delta', touch.clientY);
 
 			const minHeight = this._computeMinHeight();
 			const maxHeight = this._computeMaxHeight();
@@ -299,11 +327,12 @@ class TemplatePrimarySecondary extends LitElement {
 		}
 
 	}
+
 	_onTouchStart(e) {
 		const secondaryPanel = this.shadowRoot.querySelector('aside');
 		const touch = e.touches[0];
 		this._heightStart = this._height;
-		this._touchStart = touch.screenY;
+		this._touchStart = touch.clientY;
 		this._scrollStart = secondaryPanel.scrollTop;
 		this._isSliding = true;
 	}
