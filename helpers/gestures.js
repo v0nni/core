@@ -51,9 +51,22 @@ function handleMomentumTouchStart(e) {
 		}
 		const theta = Math.PI + Math.atan2(-distanceX, distanceY);
 		const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY); // px
-		let velocity = distance / elapsedTime; // px / s
+		const velocity = distance / elapsedTime; // px / s
 
-		let prevTime = tracking.cur.time; // ms
+		const amplitude = velocity;
+		console.log(tracking.cur.y, tracking.cur.y + distanceY);
+		const targetPosition = tracking.cur.y + distanceY;
+		const timestamp = Date.now();
+
+		const tick = () => {
+			const elapsed = Date.now() - timestamp;
+			const position = targetPosition - amplitude * Math.exp(-elapsed / 325);
+			console.log('wow: ', position);
+			requestAnimationFrame(tick);
+		};
+		requestAnimationFrame(tick);
+
+		/*let prevTime = tracking.cur.time; // ms
 		let prevX = tracking.cur.x;
 		let prevY = tracking.cur.y;
 		const step = () => {
@@ -81,7 +94,7 @@ function handleMomentumTouchStart(e) {
 				reset();
 			}
 		};
-		requestAnimationFrame(step);
+		requestAnimationFrame(step);*/
 
 		// reset();
 	};
