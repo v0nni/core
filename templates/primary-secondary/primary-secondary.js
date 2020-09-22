@@ -39,7 +39,7 @@ class TemplatePrimarySecondary extends LitElement {
 			widthType: { type: String, attribute: 'width-type', reflect: true },
 			_isCollapsed: { type: Boolean },
 			_hasFooter: { type: Boolean },
-			_width: { type: Number }
+			_height: { type: Number }
 		};
 	}
 
@@ -133,9 +133,8 @@ class TemplatePrimarySecondary extends LitElement {
 				outline:none;
 			}
 
-			@media only screen and (max-width: 768px) {
+			@media only screen and (max-width: 929px) {
 				.d2l-template-primary-secondary-container {
-					height: 100%;
 				}
 				.d2l-template-primary-secondary-content {
 					grid-template-areas:
@@ -143,11 +142,21 @@ class TemplatePrimarySecondary extends LitElement {
 						"divider"
 						"secondary";
 					grid-template-columns: auto;
-					grid-template-rows: auto 1px auto;
 				}
-				footer {
-					bottom: 0;
-					position: sticky;
+				.d2l-template-primary-secondary-divider {
+					position: relative;
+					width: 100%;
+					height: ${dividerWidth}px;
+					background-color: var(--d2l-color-mica);
+					grid-area: divider;
+				}
+				.d2l-template-primary-secondary-divider-handle {
+					left: calc(50% - 30px);
+					top: calc(-5px);
+					position: absolute;
+					height: 15px;
+					width: 60px;
+					cursor: ns-resize; /*resizer cursor*/
 				}
 			}
 		`;
@@ -157,6 +166,8 @@ class TemplatePrimarySecondary extends LitElement {
 		super();
 		this._onMouseMove = this._onMouseMove.bind(this);
 		this._onMouseUp = this._onMouseUp.bind(this);
+		this._onTouchMove = this._onTouchMove.bind(this);
+		this._onTouchEnd = this._onTouchEnd.bind(this);
 
 		this.widthType = 'fullscreen';
 		this.backgroundShading = 'none';
@@ -166,19 +177,22 @@ class TemplatePrimarySecondary extends LitElement {
 		super.connectedCallback();
 		window.addEventListener('mousemove', this._onMouseMove);
 		window.addEventListener('mouseup', this._onMouseUp);
+		window.addEventListener('touchmove', this._onTouchMove, { passive: false });
+		window.addEventListener('touchend', this._onTouchEnd);
 	}
 
 	firstUpdated(changedProperties) {
 		super.firstUpdated(changedProperties);
 
-		const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
-		const contentWidth = contentArea.offsetWidth;
-		const width = (contentWidth - dividerWidth) * (2 / 3);
-		this._width = this._clampWidth(width, contentWidth);
+		this.updateComplete.then(() => {
+			const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
+			const contentHeight = contentArea.offsetHeight;
+			this._height = (contentHeight - dividerWidth) * (2 / 3);
+		});
 	}
 
 	render() {
-		const primaryStyles = !this._isCollapsed ? { width: `${this._width}px` } : {};
+		const primaryStyles = !this._isCollapsed ? { height: `${this._height}px` } : {};
 		return html`
 			<div class="d2l-template-primary-secondary-container">
 				<header><slot name="header"></slot></header>
@@ -188,7 +202,7 @@ class TemplatePrimarySecondary extends LitElement {
 						<div tabindex="0" class="d2l-template-primary-secondary-divider-handle" @mousedown=${this._onMouseDown} @keydown="${this._onKeyDown}">
 						</div>
 					</div>
-					<aside><slot name="secondary"></slot></aside>
+					<aside @touchstart=${this._onTouchStart}><slot name="secondary"></slot></aside>
 				</div>
 				<footer ?hidden="${!this._hasFooter}">
 					<div class="d2l-template-primary-secondary-footer"><slot name="footer" @slotchange="${this._handleFooterSlotChange}"></div></slot>
@@ -196,7 +210,6 @@ class TemplatePrimarySecondary extends LitElement {
 			</div>
 		`;
 	}
-
 	_clampWidth(width, contentWidth) {
 		if (contentWidth === undefined) {
 			const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
@@ -205,32 +218,37 @@ class TemplatePrimarySecondary extends LitElement {
 		return Math.max(minPanelWidth, Math.min(width, contentWidth - dividerWidth - minPanelWidth));
 	}
 
+	_computeMaxHeight() {
+		const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
+		const contentHeight = contentArea.offsetHeight - dividerWidth;
+
+		return contentHeight * (2 / 3);
+	}
+
+	_computeMinHeight() {
+		const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
+		const secondaryPanel = this.shadowRoot.querySelector('aside');
+		const contentHeight = contentArea.offsetHeight - dividerWidth;
+
+		return Math.max(contentHeight * (1 / 3), contentHeight - secondaryPanel.scrollHeight);
+	}
+
+	async _getUpdateComplete() {
+		const fontsPromise = document.fonts ? document.fonts.ready : Promise.resolve();
+		await super._getUpdateComplete();
+		/* wait for the fonts to load because browsers have a font block period
+		where they will render an invisible fallback font face that may result in
+		improper width calculations before the real font is loaded */
+		await fontsPromise;
+	}
+
 	_handleFooterSlotChange(e) {
 		const nodes = e.target.assignedNodes();
 		this._hasFooter = (nodes.length !== 0);
 	}
 
 	_onKeyDown(e) {
-		if (e.keyCode !== keyCodes.LEFT && e.keyCode !== keyCodes.RIGHT) {
-			return;
-		}
-		const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
-		const contentWidth = contentArea.offsetWidth;
 
-		const min = minPanelWidth;
-		const max = contentWidth - dividerWidth - minPanelWidth;
-		if (this._width === max && e.keyCode === keyCodes.RIGHT) {
-			this._isCollapsed = true;
-			return;
-		} else if (this._isCollapsed && e.keyCode === keyCodes.LEFT) {
-			this._isCollapsed = false;
-			return;
-		}
-		const delta = (max - min) / 6;
-		const direction = e.keyCode === keyCodes.LEFT ? -1 : 1;
-
-		const newWidth = this._width + delta * direction;
-		this._width = this._clampWidth(min + delta * Math.round((newWidth - min) / delta), contentWidth);
 	}
 	_onMouseDown() {
 		this._isResizing = true;
@@ -239,15 +257,55 @@ class TemplatePrimarySecondary extends LitElement {
 	_onMouseMove(e) {
 		if (this._isResizing) {
 			e.preventDefault();
-			this._updateWidth(e.pageX);
+			// this._updateWidth(e.pageX);
 		}
 	}
 
 	_onMouseUp(e) {
 		if (this._isResizing) {
 			this._updateWidth(e.pageX);
-			this._isResizing = false;
+			// this._isResizing = false;
 		}
+	}
+
+	_onTouchEnd() {
+		this._isSliding = false;
+
+	}
+
+	_onTouchMove(e) {
+		if (this._isSliding) {
+			const touch = e.touches[0];
+			const delta = touch.screenY - this._touchStart;
+
+			const minHeight = this._computeMinHeight();
+			const maxHeight = this._computeMaxHeight();
+
+			e.preventDefault();
+			const secondaryPanel = this.shadowRoot.querySelector('aside');
+			if (delta > 0) {
+				const desiredScroll = this._scrollStart - delta;
+				secondaryPanel.scrollTop = desiredScroll;
+
+				const desiredHeight = desiredScroll - secondaryPanel.scrollTop;
+				this._height = Math.min(Math.max(this._heightStart - desiredHeight, minHeight), maxHeight);
+			} else {
+				const desiredHeight = this._heightStart + delta;
+				this._height = Math.min(Math.max(desiredHeight, minHeight), maxHeight);
+
+				const desiredScroll = desiredHeight - this._height;
+				secondaryPanel.scrollTop = this._scrollStart - desiredScroll;
+			}
+		}
+
+	}
+	_onTouchStart(e) {
+		const secondaryPanel = this.shadowRoot.querySelector('aside');
+		const touch = e.touches[0];
+		this._heightStart = this._height;
+		this._touchStart = touch.screenY;
+		this._scrollStart = secondaryPanel.scrollTop;
+		this._isSliding = true;
 	}
 
 	_updateWidth(desiredWidth) {
