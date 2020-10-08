@@ -483,7 +483,6 @@ class TemplatePrimarySecondary extends LitElement {
 	static get styles() {
 		return css`
 			:host {
-				height: 100%;
 				overflow: hidden;
 			}
 			:host([hidden]) {
@@ -498,7 +497,7 @@ class TemplatePrimarySecondary extends LitElement {
 			.d2l-template-primary-secondary-container {
 				display: flex;
 				flex-direction: column;
-				height: 100%;
+				height: 100vh;
 			}
 			.d2l-template-primary-secondary-content {
 				height: 100%;
@@ -513,7 +512,7 @@ class TemplatePrimarySecondary extends LitElement {
 				transition: none;
 			}
 			:host([resizable]) main {
-				flex: initial;
+				flex: 1 0 0;
 			}
 			:host([primary-overflow="hidden"]) main {
 				overflow: hidden;
@@ -543,7 +542,7 @@ class TemplatePrimarySecondary extends LitElement {
 				display: table;
 			}
 			[data-background-shading="primary"] > main,
-			[data-background-shading="secondary"] > aside {
+			[data-background-shading="secondary"] > .d2l-template-primary-secondary-secondary-container {
 				background-color: var(--d2l-color-gypsum);
 			}
 			[data-is-collapsed] aside {
@@ -594,7 +593,7 @@ class TemplatePrimarySecondary extends LitElement {
 				}
 
 				main {
-					flex: initial;
+					flex: 1 0 0;
 				}
 				.d2l-template-primary-secondary-secondary-container {
 					flex: none;
