@@ -172,7 +172,7 @@ class DesktopMouseResizer extends Resizer {
 	}
 
 	_computeContentX(clientX) {
-		const x = clientX - this.contentRect.x;
+		const x = clientX - this.contentRect.left;
 		return this.isRtl ? x : this.contentRect.width - x;
 	}
 
@@ -310,7 +310,7 @@ class MobileMouseResizer extends Resizer {
 	_onMouseDown(e) {
 		if (this.isMobile) {
 			this.dispatchResizeStart();
-			const y = e.clientY - this.contentRect.y;
+			const y = e.clientY - this.contentRect.top;
 			this._offset = y - (this.contentRect.height - this.panelSize);
 			this._isResizing = true;
 		}
@@ -321,7 +321,7 @@ class MobileMouseResizer extends Resizer {
 			return;
 		}
 		e.preventDefault();
-		const y = e.clientY - this.contentRect.y;
+		const y = e.clientY - this.contentRect.top;
 
 		let actualSecondaryHeight;
 		const collapseThreshold = this.minHeight / 2;
