@@ -497,7 +497,11 @@ class TemplatePrimarySecondary extends LitElement {
 			.d2l-template-primary-secondary-container {
 				display: flex;
 				flex-direction: column;
-				height: 100vh;
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
 			}
 			.d2l-template-primary-secondary-content {
 				height: 100%;
@@ -555,6 +559,7 @@ class TemplatePrimarySecondary extends LitElement {
 				overflow: visible;
 				position: relative;
 				width: 1px;
+				z-index: 1;
 			}
 			:host([resizable]) .d2l-template-primary-secondary-divider {
 				cursor: ew-resize;
@@ -707,6 +712,7 @@ class TemplatePrimarySecondary extends LitElement {
 		}
 		this._maxPanelHeight = this._contentBounds.maxHeight;
 	}
+
 	render() {
 		const secondaryPanelStyles = {};
 		if (this._isResizable()) {
