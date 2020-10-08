@@ -473,12 +473,12 @@ class TemplatePrimarySecondary extends LitElement {
 			 * @type {'fullscreen'|'normal'}
 			 */
 			widthType: { type: String, attribute: 'width-type', reflect: true },
-			_animateResize: { type: Boolean },
-			_hasFooter: { type: Boolean },
-			_isCollapsed: { type: Boolean },
-			_isMobile: { type: Boolean },
-			_maxPanelHeight: { type: Number },
-			_size: { type: Number }
+			_animateResize: { type: Boolean, attribute: false },
+			_hasFooter: { type: Boolean, attribute: false },
+			_isCollapsed: { type: Boolean, attribute: false },
+			_isMobile: { type: Boolean, attribute: false },
+			_maxPanelHeight: { type: Number, attribute: false },
+			_size: { type: Number, attribute: false }
 		};
 	}
 
