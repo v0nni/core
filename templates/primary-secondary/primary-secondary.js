@@ -4,6 +4,8 @@ import { css, html, LitElement } from 'lit-element/lit-element';
 import ResizeObserver from 'resize-observer-polyfill/dist/ResizeObserver.es.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const mobileDividerThickness = 2;
 const desktopDividerThickness = 5;
 const desktopMinPanelSize = 320;
@@ -590,7 +592,6 @@ class TemplatePrimarySecondary extends LitElement {
 			header, footer {
 				z-index: 2; /* ensures the footer box-shadow is over main areas with background colours set */
 			}
-
 			@media only screen and (max-width: 768px) {
 
 				.d2l-template-primary-secondary-content {
@@ -812,10 +813,11 @@ class TemplatePrimarySecondary extends LitElement {
 			this._size = this._restoreSize || this._contentBounds.minHeight;
 			this._isCollapsed = false;
 		} else {
+			this._isCollapsed = reduceMotion;
 			this._restoreSize = this._size;
 			this._size = 0;
 		}
-		this._animateResize = true;
+		this._animateResize = !reduceMotion;
 		this._isHandleTap = false;
 	}
 
@@ -827,8 +829,10 @@ class TemplatePrimarySecondary extends LitElement {
 		if (this._isResizable()) {
 			if (e.size > 0) {
 				this._isCollapsed = false;
+			} else if (reduceMotion) {
+				this._isCollapsed = true;
 			}
-			this._animateResize = e.animateResize;
+			this._animateResize = !reduceMotion && e.animateResize;
 			this._isHandleTap = false;
 			this._size = e.size;
 		}
