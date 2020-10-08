@@ -546,6 +546,9 @@ class TemplatePrimarySecondary extends LitElement {
 			[data-background-shading="secondary"] > aside {
 				background-color: var(--d2l-color-gypsum);
 			}
+			[data-is-collapsed] aside {
+				display: none;
+			}
 
 			.d2l-template-primary-secondary-divider {
 				background-color: var(--d2l-color-mica);
@@ -637,7 +640,6 @@ class TemplatePrimarySecondary extends LitElement {
 
 		this._onContentResize = this._onContentResize.bind(this);
 		this._onResize = this._onResize.bind(this);
-		this._onResizeEnd = this._onResizeEnd.bind(this);
 
 		const isRtl = document.documentElement.getAttribute('dir') === 'rtl';
 		this._desktopMouseResizer = new DesktopMouseResizer(isRtl);
@@ -655,11 +657,11 @@ class TemplatePrimarySecondary extends LitElement {
 		];
 		for (const resizer of this._resizers) {
 			resizer.onResize(this._onResize);
-			resizer.onResizeEnd(this._onResizeEnd);
 		}
 
 		this._size = 0;
 		this._animateResize = false;
+		this._isCollapsed = false;
 		this.widthType = 'fullscreen';
 		this.backgroundShading = 'none';
 		this.resizable = false;
@@ -706,7 +708,6 @@ class TemplatePrimarySecondary extends LitElement {
 		}
 		this._maxPanelHeight = this._contentBounds.maxHeight;
 	}
-
 	render() {
 		const secondaryPanelStyles = {};
 		if (this._isResizable()) {
@@ -722,10 +723,10 @@ class TemplatePrimarySecondary extends LitElement {
 					<main><slot name="primary"></slot></main>
 					<div class="d2l-template-primary-secondary-divider">
 						<div @click=${this._onHandleTap} class="d2l-template-primary-secondary-divider-handle" tabindex="0">
-							${this._isCollapsed ? html`<d2l-icon icon="tier1:chevron-up"></d2l-icon>` : html`<d2l-icon icon="tier1:chevron-down"></d2l-icon>`}
+							${this._size === 0 ? html`<d2l-icon icon="tier1:chevron-up"></d2l-icon>` : html`<d2l-icon icon="tier1:chevron-down"></d2l-icon>`}
 						</div>
 					</div>
-					<div style=${styleMap(secondaryPanelStyles)} class="d2l-template-primary-secondary-secondary-container">
+					<div style=${styleMap(secondaryPanelStyles)} class="d2l-template-primary-secondary-secondary-container" @transitionend=${this._onTransitionEnd}>
 						<aside style=${styleMap(secondaryStyles)}>
 							<slot name="secondary"></slot>
 						</aside>
@@ -785,7 +786,7 @@ class TemplatePrimarySecondary extends LitElement {
 		this._maxPanelHeight = this._contentBounds.maxHeight;
 		this._isMobile = isMobile();
 
-		if (!this._isCollapsed) {
+		if (this._size !== 0) {
 			if (this._isMobile) {
 				this._size = clamp(this._size, this._contentBounds.minHeight, this._contentBounds.maxHeight);
 			} else {
@@ -803,33 +804,30 @@ class TemplatePrimarySecondary extends LitElement {
 			return;
 		}
 		this._animateResize = true;
-		if (this._isCollapsed) {
+		if (this._size === 0) {
 			this._size = this._restoreSize || this._contentBounds.minHeight;
+			this._isCollapsed = false;
 		} else {
 			this._restoreSize = this._size;
 			this._size = 0;
 		}
-		this._isCollapsed = !this._isCollapsed;
-		this._onResizeEnd(true);
 	}
 
 	_onResize(e) {
 		if (this._isResizable()) {
+			if (e.size > 0) {
+				this._isCollapsed = false;
+			}
 			this._animateResize = e.animateResize;
-			this._isCollapsed = e.size === 0;
 			this._size = e.size;
 		}
 	}
 
-	_onResizeEnd() {
-		if (this._animateResize) {
-			const primaryPanel = this.shadowRoot.querySelector('.d2l-template-primary-secondary-secondary-container');
-			const transitionend = () => {
-				primaryPanel.removeEventListener('transitionend', transitionend);
-				this._animateResize = false;
-			};
-			primaryPanel.addEventListener('transitionend', transitionend);
+	_onTransitionEnd() {
+		if (this._size === 0) {
+			this._isCollapsed = true;
 		}
+		this._animateResize = false;
 	}
 }
 
