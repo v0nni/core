@@ -727,7 +727,7 @@ class TemplatePrimarySecondary extends LitElement {
 				<div class="d2l-template-primary-secondary-content" data-background-shading="${this.backgroundShading}" ?data-animate-resize=${this._animateResize} ?data-is-collapsed=${this._isCollapsed}>
 					<main><slot name="primary"></slot></main>
 					<div class="d2l-template-primary-secondary-divider">
-						<div @click=${this._onHandleTap} class="d2l-template-primary-secondary-divider-handle" tabindex="0">
+						<div @click=${this._onHandleTap} @mousedown=${this._onHandleTapStart} class="d2l-template-primary-secondary-divider-handle" tabindex="0">
 							${this._size === 0 ? html`<d2l-icon icon="tier1:chevron-up"></d2l-icon>` : html`<d2l-icon icon="tier1:chevron-down"></d2l-icon>`}
 						</div>
 					</div>
@@ -805,10 +805,9 @@ class TemplatePrimarySecondary extends LitElement {
 	}
 
 	_onHandleTap() {
-		if (!this._isMobile) {
+		if (!this._isMobile || !this._isHandleTap) {
 			return;
 		}
-		this._animateResize = true;
 		if (this._size === 0) {
 			this._size = this._restoreSize || this._contentBounds.minHeight;
 			this._isCollapsed = false;
@@ -816,6 +815,12 @@ class TemplatePrimarySecondary extends LitElement {
 			this._restoreSize = this._size;
 			this._size = 0;
 		}
+		this._animateResize = true;
+		this._isHandleTap = false;
+	}
+
+	_onHandleTapStart() {
+		this._isHandleTap = true;
 	}
 
 	_onResize(e) {
@@ -824,6 +829,7 @@ class TemplatePrimarySecondary extends LitElement {
 				this._isCollapsed = false;
 			}
 			this._animateResize = e.animateResize;
+			this._isHandleTap = false;
 			this._size = e.size;
 		}
 	}
