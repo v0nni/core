@@ -568,6 +568,8 @@ class TemplatePrimarySecondary extends LitElement {
 				width: 0.45rem;
 			}
 			.d2l-template-primary-secondary-divider-handle {
+				background-color: transparent;
+				border: none;
 				display: none;
 				border-radius: 0.05rem;
 				justify-content: space-between;
@@ -785,7 +787,7 @@ class TemplatePrimarySecondary extends LitElement {
 				<div class="d2l-template-primary-secondary-content" data-background-shading="${this.backgroundShading}" ?data-animate-resize=${this._animateResize} ?data-is-collapsed=${this._isCollapsed}>
 					<main><slot name="primary"></slot></main>
 					<div class="d2l-template-primary-secondary-divider">
-						<div @click=${this._onHandleTap} @mousedown=${this._onHandleTapStart} class="d2l-template-primary-secondary-divider-handle" tabindex="0">
+						<button @click=${this._onHandleTap} @mousedown=${this._onHandleTapStart} class="d2l-template-primary-secondary-divider-handle">
 							<div class="d2l-template-primary-secondary-divider-handle-desktop">
 								<d2l-icon-custom size="tier1" class="d2l-template-primary-secondary-divider-handle-left">
 									<svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">
@@ -802,7 +804,7 @@ class TemplatePrimarySecondary extends LitElement {
 							</div>
 							<div class="d2l-template-primary-secondary-divider-handle-mobile">
 							</div>
-						</div>
+						</button>
 					</div>
 					<div style=${styleMap(secondaryPanelStyles)} class="d2l-template-primary-secondary-secondary-container" @transitionend=${this._onTransitionEnd}>
 						<aside style=${styleMap(secondaryStyles)}>
