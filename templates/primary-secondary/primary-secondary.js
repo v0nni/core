@@ -558,40 +558,50 @@ class TemplatePrimarySecondary extends LitElement {
 			.d2l-template-primary-secondary-divider {
 				background-color: var(--d2l-color-mica);
 				flex: none;
-				overflow: visible;
 				position: relative;
 				width: 1px;
 				z-index: 1;
+			}
+			.d2l-template-primary-secondary-divider-handle {
+				background-color: transparent;
+				border-radius: 0.05rem;
+				border: none;
+				display: none;
+				height: 1.6rem;
+				left: -0.1rem;
+				padding: 0 0.2rem;
+				position: absolute;
+				top: calc(50% - 0.8rem);
+				width: 0.65rem;
 			}
 			:host([resizable]) .d2l-template-primary-secondary-divider {
 				cursor: ew-resize;
 				width: 0.45rem;
 			}
-			.d2l-template-primary-secondary-divider-handle {
-				background-color: transparent;
-				border: none;
-				display: none;
-				border-radius: 0.05rem;
-				justify-content: space-between;
-				align-items: center;
-				flex-direction: row;
-				height: 1.6rem;
-				position: absolute;
-				top: calc(50% - 0.8rem);
-				left: -0.1rem;
-				width: 0.65rem;
-				padding-left: 0.2rem;
-				padding-right: 0.2rem;
-				box-sizing: border-box;
-			}
 			:host([resizable]) .d2l-template-primary-secondary-divider-handle {
-				display: flex;
+				display: block;
 			}
 			.d2l-template-primary-secondary-divider-handle-desktop {
 				display: flex;
 				justify-content: space-between;
-				align-items: center;
-				width: 100%;
+			}
+			.d2l-template-primary-secondary-divider-handle-left,
+			.d2l-template-primary-secondary-divider-handle-right {
+				color: var(--d2l-color-celestine);
+				display: none;
+				position: absolute;
+			}
+			.d2l-template-primary-secondary-divider-handle-left {
+				right: 1.225rem;
+			}
+			.d2l-template-primary-secondary-divider-handle-right {
+				left: 1.225rem;
+			}
+			.d2l-template-primary-secondary-divider-handle-line {
+				background-color: var(--d2l-color-galena);
+				border-radius: 0.05rem;
+				height: 0.9rem;
+				width: 0.1rem;
 			}
 			.d2l-template-primary-secondary-divider-handle:focus {
 				box-shadow: 0 0 0 0.1rem var(--d2l-color-celestine);
@@ -600,27 +610,6 @@ class TemplatePrimarySecondary extends LitElement {
 			.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-right,
 			.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-left {
 				display: block;
-			}
-			.d2l-template-primary-secondary-divider-handle-line {
-				background-color: var(--d2l-color-galena);
-				width: 0.1rem;
-				height: 0.9rem;
-				border-radius: 0.05rem;
-			}
-			.d2l-template-primary-secondary-divider-handle-left,
-			.d2l-template-primary-secondary-divider-handle-right {
-				color: var(--d2l-color-celestine);
-				position: absolute;
-				display: none;
-			}
-			.d2l-template-primary-secondary-divider-handle-left {
-				right: 1.225rem;
-			}
-			.d2l-template-primary-secondary-divider-handle-right {
-				left: 1.225rem;
-			}
-			.d2l-template-primary-secondary-divider-handle > d2l-icon {
-				display: none;
 			}
 
 			footer {
@@ -644,56 +633,46 @@ class TemplatePrimarySecondary extends LitElement {
 					flex: none;
 				}
 
+				.d2l-template-primary-secondary-divider-handle-desktop {
+					display: none;
+				}
 				/* Attribute selector is only used to increase specificity */
 				:host([resizable]) .d2l-template-primary-secondary-divider,
 				:host(:not([resizable])) .d2l-template-primary-secondary-divider {
-					width: 100%;
-					height: ${mobileDividerThickness}px;
 					background-color: var(--d2l-color-celestine);
+					cursor: ns-resize; /*resizer cursor*/
+					height: ${mobileDividerThickness}px;
+					width: 100%;
 				}
-				/* Attribute selector is only used to increase specificity */
 				.d2l-template-primary-secondary-divider-handle {
-					background-color: none;
 					bottom: 0.1rem;
 					display: block;
-					height: 1.0rem;
 					left: auto;
-					position: absolute;
+					overflow: hidden;
 					right: calc(17px + 0.2rem);
 					top: auto;
+				}
+				.d2l-template-primary-secondary-divider-handle-mobile {
+					background-color: var(--d2l-color-celestine);
+					border-radius: 0.25rem 0.25rem 0 0;
+					bottom: 0;
+					position: absolute;
+					right: 0;
+				}
+				.d2l-template-primary-secondary-divider-handle,
+				.d2l-template-primary-secondary-divider-handle-mobile {
+					height: 1.0rem;
 					width: 2.2rem;
 				}
 				.d2l-template-primary-secondary-divider-handle:focus {
 					box-shadow: none;
-					width: 2.6rem;
 					height: 1.2rem;
 					right: 17px;
-					overflow: hidden;
-				}
-				.d2l-template-primary-secondary-divider-handle-mobile {
-					position: absolute;
-					right: 0;
-					bottom: 0;
-					width: 2.2rem;
-					height: 1.0rem;
-					background-color: var(--d2l-color-celestine);
-					border-radius: 0.25rem 0.25rem 0 0;
+					width: 2.6rem;
 				}
 				.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-mobile {
 					right: 0.2rem;
 					box-shadow: 0 0 0 0.1rem white, 0 0 0 0.2rem var(--d2l-color-celestine);
-				}
-
-
-				.d2l-template-primary-secondary-divider-handle-desktop {
-					display: none;
-				}
-				.d2l-template-primary-secondary-divider-handle > d2l-icon {
-					color: white;
-					display: block;
-				}
-				.d2l-template-primary-secondary-divider {
-					cursor: ns-resize; /*resizer cursor*/
 				}
 			}
 		`;
