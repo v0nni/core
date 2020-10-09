@@ -564,16 +564,12 @@ class TemplatePrimarySecondary extends LitElement {
 				z-index: 1;
 			}
 			:host([resizable]) .d2l-template-primary-secondary-divider {
-				background-color: var(--d2l-color-mica);
 				cursor: ew-resize;
 				width: 0.45rem;
 			}
 			.d2l-template-primary-secondary-divider-handle {
 				display: none;
-			}
-			:host([resizable]) .d2l-template-primary-secondary-divider-handle {
 				border-radius: 0.05rem;
-				display: flex;
 				justify-content: space-between;
 				align-items: center;
 				flex-direction: row;
@@ -585,6 +581,9 @@ class TemplatePrimarySecondary extends LitElement {
 				padding-left: 0.2rem;
 				padding-right: 0.2rem;
 				box-sizing: border-box;
+			}
+			:host([resizable]) .d2l-template-primary-secondary-divider-handle {
+				display: flex;
 			}
 			.d2l-template-primary-secondary-divider-handle-desktop {
 				display: flex;
@@ -651,8 +650,7 @@ class TemplatePrimarySecondary extends LitElement {
 					background-color: var(--d2l-color-celestine);
 				}
 				/* Attribute selector is only used to increase specificity */
-				:host([resizable]) .d2l-template-primary-secondary-divider-handle,
-				:host(:not([resizable])) .d2l-template-primary-secondary-divider-handle {
+				.d2l-template-primary-secondary-divider-handle {
 					background-color: none;
 					bottom: 0.1rem;
 					display: block;
@@ -663,8 +661,7 @@ class TemplatePrimarySecondary extends LitElement {
 					top: auto;
 					width: 2.2rem;
 				}
-				:host([resizable]) .d2l-template-primary-secondary-divider-handle:focus,
-				:host(:not([resizable])) .d2l-template-primary-secondary-divider-handle:focus {
+				.d2l-template-primary-secondary-divider-handle:focus {
 					box-shadow: none;
 					width: 2.6rem;
 					height: 1.2rem;
