@@ -585,10 +585,16 @@ class TemplatePrimarySecondary extends LitElement {
 				padding-left: 0.2rem;
 				padding-right: 0.2rem;
 				box-sizing: border-box;
-				outline: none;
+			}
+			.d2l-template-primary-secondary-divider-handle-desktop {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				width: 100%;
 			}
 			.d2l-template-primary-secondary-divider-handle:focus {
 				box-shadow: 0 0 0 0.1rem var(--d2l-color-celestine);
+				outline: none;
 			}
 			.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-right,
 			.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-left {
@@ -647,19 +653,41 @@ class TemplatePrimarySecondary extends LitElement {
 				/* Attribute selector is only used to increase specificity */
 				:host([resizable]) .d2l-template-primary-secondary-divider-handle,
 				:host(:not([resizable])) .d2l-template-primary-secondary-divider-handle {
-					align-items: center;
-					background-color: inherit;
-					border-radius: 6px 6px 0 0;
-					bottom: 0;
-					cursor:pointer;
+					background-color: none;
+					bottom: 0.1rem;
 					display: block;
-					display: flex;
-					height: 30px;
-					justify-content: center;
+					height: 1.0rem;
 					left: auto;
 					position: absolute;
+					right: calc(17px + 0.2rem);
+					top: auto;
+					width: 2.2rem;
+				}
+				:host([resizable]) .d2l-template-primary-secondary-divider-handle:focus,
+				:host(:not([resizable])) .d2l-template-primary-secondary-divider-handle:focus {
+					box-shadow: none;
+					width: 2.6rem;
+					height: 1.2rem;
 					right: 17px;
-					width: 48px;
+					overflow: hidden;
+				}
+				.d2l-template-primary-secondary-divider-handle-mobile {
+					position: absolute;
+					right: 0;
+					bottom: 0;
+					width: 2.2rem;
+					height: 1.0rem;
+					background-color: var(--d2l-color-celestine);
+					border-radius: 0.25rem 0.25rem 0 0;
+				}
+				.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-mobile {
+					right: 0.2rem;
+					box-shadow: 0 0 0 0.1rem white, 0 0 0 0.2rem var(--d2l-color-celestine);
+				}
+
+
+				.d2l-template-primary-secondary-divider-handle-desktop {
+					display: none;
 				}
 				.d2l-template-primary-secondary-divider-handle > d2l-icon {
 					color: white;
@@ -761,18 +789,22 @@ class TemplatePrimarySecondary extends LitElement {
 					<main><slot name="primary"></slot></main>
 					<div class="d2l-template-primary-secondary-divider">
 						<div @click=${this._onHandleTap} @mousedown=${this._onHandleTapStart} class="d2l-template-primary-secondary-divider-handle" tabindex="0">
-							<d2l-icon-custom size="tier1" class="d2l-template-primary-secondary-divider-handle-left">
-								<svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-									<path transform="rotate(90 9.004714965820312,9.000227928161623)" d="m13.708,6.29a1.006,1.006 0 0 0 -0.708,-0.29l-7.995,0a1,1 0 0 0 -0.705,1.71l4,4a1.013,1.013 0 0 0 1.42,0l4,-4a1.01,1.01 0 0 0 -0.013,-1.42l0.001,0z" fill="#494c4e"/>
-								</svg>
-							</d2l-icon-custom>
-							<div class="d2l-template-primary-secondary-divider-handle-line"></div>
-							<div class="d2l-template-primary-secondary-divider-handle-line"></div>
-							<d2l-icon-custom size="tier1" class="d2l-template-primary-secondary-divider-handle-right">
-								<svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-									<path transform="rotate(-90 9.004714965820314,9.000227928161621)" d="m13.708,6.29a1.006,1.006 0 0 0 -0.708,-0.29l-7.995,0a1,1 0 0 0 -0.705,1.71l4,4a1.013,1.013 0 0 0 1.42,0l4,-4a1.01,1.01 0 0 0 -0.013,-1.42l0.001,0z" fill="#494c4e"/>
-								</svg>
-							</d2l-icon-custom>
+							<div class="d2l-template-primary-secondary-divider-handle-desktop">
+								<d2l-icon-custom size="tier1" class="d2l-template-primary-secondary-divider-handle-left">
+									<svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+										<path transform="rotate(90 9.004714965820312,9.000227928161623)" d="m13.708,6.29a1.006,1.006 0 0 0 -0.708,-0.29l-7.995,0a1,1 0 0 0 -0.705,1.71l4,4a1.013,1.013 0 0 0 1.42,0l4,-4a1.01,1.01 0 0 0 -0.013,-1.42l0.001,0z" fill="#494c4e"/>
+									</svg>
+								</d2l-icon-custom>
+								<div class="d2l-template-primary-secondary-divider-handle-line"></div>
+								<div class="d2l-template-primary-secondary-divider-handle-line"></div>
+								<d2l-icon-custom size="tier1" class="d2l-template-primary-secondary-divider-handle-right">
+									<svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+										<path transform="rotate(-90 9.004714965820314,9.000227928161621)" d="m13.708,6.29a1.006,1.006 0 0 0 -0.708,-0.29l-7.995,0a1,1 0 0 0 -0.705,1.71l4,4a1.013,1.013 0 0 0 1.42,0l4,-4a1.01,1.01 0 0 0 -0.013,-1.42l0.001,0z" fill="#494c4e"/>
+									</svg>
+								</d2l-icon-custom>
+							</div>
+							<div class="d2l-template-primary-secondary-divider-handle-mobile">
+							</div>
 						</div>
 					</div>
 					<div style=${styleMap(secondaryPanelStyles)} class="d2l-template-primary-secondary-secondary-container" @transitionend=${this._onTransitionEnd}>
