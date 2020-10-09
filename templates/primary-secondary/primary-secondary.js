@@ -1,5 +1,5 @@
 import '../../components/colors/colors.js';
-import '../../components/icons/icon.js';
+import '../../components/icons/icon-custom.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import ResizeObserver from 'resize-observer-polyfill/dist/ResizeObserver.es.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
@@ -564,21 +564,53 @@ class TemplatePrimarySecondary extends LitElement {
 				z-index: 1;
 			}
 			:host([resizable]) .d2l-template-primary-secondary-divider {
+				background-color: var(--d2l-color-mica);
 				cursor: ew-resize;
-				width: ${desktopDividerThickness}px;
+				width: 0.45rem;
 			}
 			.d2l-template-primary-secondary-divider-handle {
 				display: none;
 			}
 			:host([resizable]) .d2l-template-primary-secondary-divider-handle {
-				background-color: var(--d2l-color-mica);
-				border-radius: 5px;
-				display: block;
-				height: 60px;
-				left: calc(-5px);
+				border-radius: 0.05rem;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				flex-direction: row;
+				height: 1.6rem;
 				position: absolute;
-				top: calc(50% - 30px);
-				width: 15px;
+				top: calc(50% - 0.8rem);
+				left: -0.1rem;
+				width: 0.65rem;
+				padding-left: 0.2rem;
+				padding-right: 0.2rem;
+				box-sizing: border-box;
+				outline: none;
+			}
+			.d2l-template-primary-secondary-divider-handle:focus {
+				box-shadow: 0 0 0 0.1rem var(--d2l-color-celestine);
+			}
+			.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-right,
+			.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-left {
+				display: block;
+			}
+			.d2l-template-primary-secondary-divider-handle-line {
+				background-color: var(--d2l-color-galena);
+				width: 0.1rem;
+				height: 0.9rem;
+				border-radius: 0.05rem;
+			}
+			.d2l-template-primary-secondary-divider-handle-left,
+			.d2l-template-primary-secondary-divider-handle-right {
+				color: var(--d2l-color-celestine);
+				position: absolute;
+				display: none;
+			}
+			.d2l-template-primary-secondary-divider-handle-left {
+				right: 1.225rem;
+			}
+			.d2l-template-primary-secondary-divider-handle-right {
+				left: 1.225rem;
 			}
 			.d2l-template-primary-secondary-divider-handle > d2l-icon {
 				display: none;
@@ -729,7 +761,18 @@ class TemplatePrimarySecondary extends LitElement {
 					<main><slot name="primary"></slot></main>
 					<div class="d2l-template-primary-secondary-divider">
 						<div @click=${this._onHandleTap} @mousedown=${this._onHandleTapStart} class="d2l-template-primary-secondary-divider-handle" tabindex="0">
-							${this._size === 0 ? html`<d2l-icon icon="tier1:chevron-up"></d2l-icon>` : html`<d2l-icon icon="tier1:chevron-down"></d2l-icon>`}
+							<d2l-icon-custom size="tier1" class="d2l-template-primary-secondary-divider-handle-left">
+								<svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+									<path transform="rotate(90 9.004714965820312,9.000227928161623)" d="m13.708,6.29a1.006,1.006 0 0 0 -0.708,-0.29l-7.995,0a1,1 0 0 0 -0.705,1.71l4,4a1.013,1.013 0 0 0 1.42,0l4,-4a1.01,1.01 0 0 0 -0.013,-1.42l0.001,0z" fill="#494c4e"/>
+								</svg>
+							</d2l-icon-custom>
+							<div class="d2l-template-primary-secondary-divider-handle-line"></div>
+							<div class="d2l-template-primary-secondary-divider-handle-line"></div>
+							<d2l-icon-custom size="tier1" class="d2l-template-primary-secondary-divider-handle-right">
+								<svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+									<path transform="rotate(-90 9.004714965820314,9.000227928161621)" d="m13.708,6.29a1.006,1.006 0 0 0 -0.708,-0.29l-7.995,0a1,1 0 0 0 -0.705,1.71l4,4a1.013,1.013 0 0 0 1.42,0l4,-4a1.01,1.01 0 0 0 -0.013,-1.42l0.001,0z" fill="#494c4e"/>
+								</svg>
+							</d2l-icon-custom>
 						</div>
 					</div>
 					<div style=${styleMap(secondaryPanelStyles)} class="d2l-template-primary-secondary-secondary-container" @transitionend=${this._onTransitionEnd}>
