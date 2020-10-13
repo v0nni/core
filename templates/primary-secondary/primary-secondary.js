@@ -2,6 +2,7 @@ import '../../components/colors/colors.js';
 import '../../components/icons/icon-custom.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import ResizeObserver from 'resize-observer-polyfill/dist/ResizeObserver.es.js';
+import { RtlMixin } from '../../mixins/rtl-mixin.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -434,7 +435,7 @@ class MobileTouchResizer extends Resizer {
  * @slot primary - Main page content
  * @slot secondary - Supplementary page content
  */
-class TemplatePrimarySecondary extends LitElement {
+class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 
 	static get properties() {
 		return {
@@ -461,6 +462,7 @@ class TemplatePrimarySecondary extends LitElement {
 			_animateResize: { type: Boolean, attribute: false },
 			_hasFooter: { type: Boolean, attribute: false },
 			_isCollapsed: { type: Boolean, attribute: false },
+			_isExpanded: { type: Boolean, attribute: false },
 			_isMobile: { type: Boolean, attribute: false },
 			_maxPanelHeight: { type: Number, attribute: false },
 			_size: { type: Number, attribute: false }
@@ -598,6 +600,12 @@ class TemplatePrimarySecondary extends LitElement {
 			.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-left {
 				display: block;
 			}
+			:host(:not([dir="rtl"])) [data-is-expanded] .d2l-template-primary-secondary-divider-handle-left {
+				display: none;
+			}
+			:host([dir="rtl"]) [data-is-expanded] .d2l-template-primary-secondary-divider-handle-right {
+				display: none;
+			}
 			d2l-icon {
 				display: none;
 			}
@@ -648,7 +656,6 @@ class TemplatePrimarySecondary extends LitElement {
 					background-color: var(--d2l-color-celestine);
 					border-radius: 0.25rem 0.25rem 0 0;
 					bottom: 0;
-					cursor: pointer;
 					display: flex;
 					justify-content: center;
 					position: absolute;
@@ -704,6 +711,7 @@ class TemplatePrimarySecondary extends LitElement {
 		this._size = 0;
 		this._animateResize = false;
 		this._isCollapsed = false;
+		this._isExpanded = false;
 		this.widthType = 'fullscreen';
 		this.backgroundShading = 'none';
 		this.resizable = false;
@@ -763,7 +771,7 @@ class TemplatePrimarySecondary extends LitElement {
 		return html`
 			<div class="d2l-template-primary-secondary-container">
 				<header><slot name="header"></slot></header>
-				<div class="d2l-template-primary-secondary-content" data-background-shading="${this.backgroundShading}" ?data-animate-resize=${this._animateResize} ?data-is-collapsed=${this._isCollapsed}>
+				<div class="d2l-template-primary-secondary-content" data-background-shading="${this.backgroundShading}" ?data-animate-resize=${this._animateResize} ?data-is-collapsed=${this._isCollapsed} ?data-is-expanded=${this._isExpanded}>
 					<main><slot name="primary"></slot></main>
 					<div class="d2l-template-primary-secondary-divider">
 						<button @click=${this._onHandleTap} @mousedown=${this._onHandleTapStart} class="d2l-template-primary-secondary-divider-handle">
@@ -855,6 +863,7 @@ class TemplatePrimarySecondary extends LitElement {
 			} else {
 				this._size = clamp(this._size, this._contentBounds.minWidth, this._contentBounds.maxWidth);
 			}
+			this._isExpanded = this._size === this._contentBounds.maxWidth;
 		}
 		for (const resizer of this._resizers) {
 			resizer.contentRect = contentRect;
@@ -890,6 +899,7 @@ class TemplatePrimarySecondary extends LitElement {
 			} else if (reduceMotion) {
 				this._isCollapsed = true;
 			}
+			this._isExpanded = e.size === this._contentBounds.maxWidth;
 			this._animateResize = !reduceMotion && e.animateResize;
 			this._isHandleTap = false;
 			this._size = e.size;
