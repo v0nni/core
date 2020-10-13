@@ -48,18 +48,6 @@ class Resizer {
 		}
 	}
 
-	dispatchResizeEnd() {
-		if (this._onResizeEndCallback) {
-			this._onResizeEndCallback();
-		}
-	}
-
-	dispatchResizeStart() {
-		if (this._onResizeStartCallback) {
-			this._onResizeStartCallback();
-		}
-	}
-
 	onResize(callback) {
 		this._onResizeCallback = callback;
 	}
@@ -118,9 +106,7 @@ class DesktopKeyboardResizer extends Resizer {
 				secondaryWidth = actualSecondaryWidth;
 			}
 		}
-		this.dispatchResizeStart();
 		this.dispatchResize(secondaryWidth, true);
-		this.dispatchResizeEnd();
 	}
 }
 
@@ -175,7 +161,6 @@ class DesktopMouseResizer extends Resizer {
 
 	_onResizeEnd() {
 		if (this._isResizing) {
-			this.dispatchResizeEnd();
 			this._isResizing = false;
 		}
 	}
@@ -210,7 +195,6 @@ class DesktopMouseResizer extends Resizer {
 
 	_resizeStart(clientX) {
 		if (!this.isMobile) {
-			this.dispatchResizeStart();
 			const x = this._computeContentX(clientX);
 			this._offset = this.panelSize - x;
 			this._isResizing = true;
@@ -263,9 +247,7 @@ class MobileKeyboardResizer extends Resizer {
 				secondaryHeight = actualSecondaryHeight;
 			}
 		}
-		this.dispatchResizeStart();
 		this.dispatchResize(secondaryHeight, true);
-		this.dispatchResizeEnd();
 	}
 }
 
@@ -295,7 +277,6 @@ class MobileMouseResizer extends Resizer {
 
 	_onMouseDown(e) {
 		if (this.isMobile) {
-			this.dispatchResizeStart();
 			const y = e.clientY - this.contentRect.top;
 			this._offset = y - (this.contentRect.height - this.panelSize);
 			this._isResizing = true;
@@ -323,7 +304,6 @@ class MobileMouseResizer extends Resizer {
 
 	_onMouseUp() {
 		if (this._isResizing) {
-			this.dispatchResizeEnd();
 			this._isResizing = false;
 		}
 	}
@@ -374,7 +354,6 @@ class MobileTouchResizer extends Resizer {
 				}
 				this.dispatchResize(secondaryHeight, true);
 			}
-			this.dispatchResizeEnd();
 			this._isResizing = false;
 		}
 	}
@@ -386,7 +365,6 @@ class MobileTouchResizer extends Resizer {
 			this._isResizing = true;
 			this._touches = [];
 			this._trackTouch(touch);
-			this.dispatchResizeStart();
 		}
 	}
 
