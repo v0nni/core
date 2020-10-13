@@ -565,6 +565,7 @@ class TemplatePrimarySecondary extends LitElement {
 				width: 0.45rem;
 			}
 			:host([resizable]) .d2l-template-primary-secondary-divider-handle {
+				cursor: inherit;
 				display: block;
 			}
 			.d2l-template-primary-secondary-divider-handle-desktop {
@@ -596,6 +597,9 @@ class TemplatePrimarySecondary extends LitElement {
 			.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-right,
 			.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-left {
 				display: block;
+			}
+			d2l-icon {
+				display: none;
 			}
 
 			footer {
@@ -631,6 +635,7 @@ class TemplatePrimarySecondary extends LitElement {
 					width: 100%;
 				}
 				.d2l-template-primary-secondary-divider-handle {
+					border-radius: 0;
 					bottom: 0.1rem;
 					display: block;
 					left: auto;
@@ -639,9 +644,13 @@ class TemplatePrimarySecondary extends LitElement {
 					top: auto;
 				}
 				.d2l-template-primary-secondary-divider-handle-mobile {
+					align-items: center;
 					background-color: var(--d2l-color-celestine);
 					border-radius: 0.25rem 0.25rem 0 0;
 					bottom: 0;
+					cursor: pointer;
+					display: flex;
+					justify-content: center;
 					position: absolute;
 					right: 0;
 				}
@@ -655,6 +664,10 @@ class TemplatePrimarySecondary extends LitElement {
 					height: 1.2rem;
 					right: 17px;
 					width: 2.6rem;
+				}
+				d2l-icon {
+					display: block;
+					color: white;
 				}
 				.d2l-template-primary-secondary-divider-handle:focus .d2l-template-primary-secondary-divider-handle-mobile {
 					right: 0.2rem;
@@ -769,6 +782,7 @@ class TemplatePrimarySecondary extends LitElement {
 								</d2l-icon-custom>
 							</div>
 							<div class="d2l-template-primary-secondary-divider-handle-mobile">
+								${this._size === 0 ? html`<d2l-icon icon="tier1:chevron-up"></d2l-icon>` : html`<d2l-icon icon="tier1:chevron-down"></d2l-icon>`}
 							</div>
 						</button>
 					</div>
