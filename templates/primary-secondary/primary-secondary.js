@@ -541,7 +541,10 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 			[data-is-collapsed] aside {
 				display: none;
 			}
-
+			.d2l-template-primary-secondary-divider,
+			.d2l-template-primary-secondary-divider-handle-mobile {
+				transition: background-color 200ms;
+			}
 			.d2l-template-primary-secondary-divider {
 				background-color: var(--d2l-color-mica);
 				flex: none;
@@ -565,6 +568,9 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 				background-color: var(--d2l-color-gypsum);
 				cursor: ew-resize;
 				width: 0.45rem;
+			}
+			:host([resizable]) .d2l-template-primary-secondary-divider:hover {
+				background-color: var(--d2l-color-mica);
 			}
 			:host([resizable]) .d2l-template-primary-secondary-divider-handle {
 				cursor: inherit;
@@ -642,6 +648,9 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 					height: 0.1rem;
 					width: 100%;
 				}
+				:host([resizable]) .d2l-template-primary-secondary-divider:hover {
+					background-color: var(--d2l-color-celestine-minus-1);
+				}
 				.d2l-template-primary-secondary-divider-handle {
 					border-radius: 0;
 					bottom: 0.1rem;
@@ -660,6 +669,9 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 					justify-content: center;
 					position: absolute;
 					right: 0;
+				}
+				.d2l-template-primary-secondary-divider-handle-mobile:hover {
+					background-color: var(--d2l-color-celestine-minus-1);
 				}
 				.d2l-template-primary-secondary-divider-handle,
 				.d2l-template-primary-secondary-divider-handle-mobile {
