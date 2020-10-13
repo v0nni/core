@@ -6,10 +6,7 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const mobileDividerThickness = 2;
-const desktopDividerThickness = 5;
-const desktopMinPanelSize = 320;
-const desktopCollapseThreshold = desktopMinPanelSize / 2;
+const desktopMinSize = 320;
 
 const keyCodes = Object.freeze({
 	LEFT: 37,
@@ -30,31 +27,18 @@ class Resizer {
 
 	constructor(isRtl) {
 		this.contentRect = null;
+		this.contentBounds = null;
 		this.isMobile = false;
 		this.panelSize = 0;
 		this.isRtl = isRtl;
 	}
 
-	get contentRect() {
-		return this._contentRect;
-	}
-
-	set contentRect(val) {
-		if (val) {
-			this.minWidth = desktopMinPanelSize;
-			this.maxWidth = val.width - desktopMinPanelSize - desktopDividerThickness;
-			this.minHeight = (val.height - mobileDividerThickness) * (1 / 3);
-			this.maxHeight = (val.height - mobileDividerThickness) * (2 / 3);
-		}
-		this._contentRect = val;
-	}
-
 	clampHeight(height) {
-		return clamp(height, this.minHeight, this.maxHeight);
+		return clamp(height, this.contentBounds.minHeight, this.contentBounds.maxHeight);
 	}
 
 	clampWidth(width) {
-		return clamp(width, this.minWidth, this.maxWidth);
+		return clamp(width, this.contentBounds.minWidth, this.contentBounds.maxWidth);
 	}
 
 	dispatchResize(size, animateResize) {
@@ -116,15 +100,15 @@ class DesktopKeyboardResizer extends Resizer {
 		let secondaryWidth;
 		if (this.panelSize === 0) {
 			if (e.keyCode === this._leftKeyCode) {
-				secondaryWidth = this.minWidth;
+				secondaryWidth = this.contentBounds.minWidth;
 			} else {
 				secondaryWidth = 0;
 			}
 		} else {
-			const delta = (this.maxWidth - this.minWidth) / 6;
+			const delta = (this.contentBounds.maxWidth - this.contentBounds.minWidth) / 6;
 			const direction = e.keyCode === this._leftKeyCode ? 1 : -1;
 			const desiredWidth = this.panelSize + delta * direction;
-			const desiredSteppedWidth = this.minWidth + delta * Math.round((desiredWidth - this.minWidth) / delta);
+			const desiredSteppedWidth = this.contentBounds.minWidth + delta * Math.round((desiredWidth - this.contentBounds.minWidth) / delta);
 
 			const actualSecondaryWidth = this.clampWidth(desiredSteppedWidth);
 			if (desiredSteppedWidth < actualSecondaryWidth) {
@@ -212,8 +196,9 @@ class DesktopMouseResizer extends Resizer {
 	_resize(clientX) {
 		let actualSecondaryWidth;
 		const x = this._computeContentX(clientX);
+		const collapseThreshold = this.contentBounds.minWidth / 2;
 		const desiredSecondaryWidth = x + this._offset;
-		if (desiredSecondaryWidth < desktopCollapseThreshold) {
+		if (desiredSecondaryWidth < collapseThreshold) {
 			actualSecondaryWidth = 0;
 		} else {
 			actualSecondaryWidth = this.clampWidth(desiredSecondaryWidth);
@@ -260,15 +245,15 @@ class MobileKeyboardResizer extends Resizer {
 		let secondaryHeight;
 		if (this.panelSize === 0) {
 			if (e.keyCode === keyCodes.UP) {
-				secondaryHeight = this.minHeight;
+				secondaryHeight = this.contentBounds.minHeight;
 			} else {
 				secondaryHeight = 0;
 			}
 		} else {
-			const delta = (this.maxHeight - this.minHeight) / (this._steps - 1);
+			const delta = (this.contentBounds.maxHeight - this.contentBounds.minHeight) / (this._steps - 1);
 			const direction = e.keyCode === keyCodes.UP ? 1 : -1;
 			const desiredHeight = this.panelSize + delta * direction;
-			const desiredSteppedHeight = this.minHeight + delta * Math.round((desiredHeight - this.minHeight) / delta);
+			const desiredSteppedHeight = this.contentBounds.minHeight + delta * Math.round((desiredHeight - this.contentBounds.minHeight) / delta);
 
 			const actualSecondaryHeight = this.clampHeight(desiredSteppedHeight);
 			if (desiredSteppedHeight < actualSecondaryHeight) {
@@ -324,7 +309,7 @@ class MobileMouseResizer extends Resizer {
 		const y = e.clientY - this.contentRect.top;
 
 		let actualSecondaryHeight;
-		const collapseThreshold = this.minHeight / 2;
+		const collapseThreshold = this.contentBounds.minHeight / 2;
 		const desiredSecondaryHeight = this.contentRect.height - y + this._offset;
 		if (desiredSecondaryHeight < collapseThreshold) {
 			actualSecondaryHeight = 0;
@@ -378,13 +363,13 @@ class MobileTouchResizer extends Resizer {
 
 	_onResizeEnd() {
 		if (this._isResizing) {
-			if (this.panelSize > this.minHeight && this.panelSize < this.maxHeight) {
+			if (this.panelSize > this.contentBounds.minHeight && this.panelSize < this.contentBounds.maxHeight) {
 				let secondaryHeight;
 				const touchDirection = this._computeTouchDirection();
 				if (touchDirection >= 0) {
-					secondaryHeight = this.minHeight;
+					secondaryHeight = this.contentBounds.minHeight;
 				} else {
-					secondaryHeight = this.maxHeight;
+					secondaryHeight = this.contentBounds.maxHeight;
 				}
 				this.dispatchResize(secondaryHeight, true);
 			}
@@ -423,7 +408,7 @@ class MobileTouchResizer extends Resizer {
 			isScrollable = curScroll > 0;
 		} else if (delta < 0) {
 			secondaryHeight = this.clampHeight(this.panelSize - delta);
-			isScrollable = secondaryHeight === this.maxHeight;
+			isScrollable = secondaryHeight === this.contentBounds.maxHeight;
 		}
 		if (!isScrollable && e.cancelable) {
 			e.preventDefault();
@@ -525,7 +510,7 @@ class TemplatePrimarySecondary extends LitElement {
 			}
 			.d2l-template-primary-secondary-secondary-container {
 				flex: 1 0 0;
-				min-width: ${desktopMinPanelSize}px;
+				min-width: ${desktopMinSize}px;
 				overflow: hidden;
 			}
 			:host([resizable]) .d2l-template-primary-secondary-secondary-container {
@@ -538,7 +523,7 @@ class TemplatePrimarySecondary extends LitElement {
 			aside {
 				-webkit-overflow-scrolling: touch;
 				max-height: 100%;
-				min-width: ${desktopMinPanelSize}px;
+				min-width: ${desktopMinSize}px;
 				overflow-y: auto;
 			}
 			/* prevent margin colapse on slotted children */
@@ -575,6 +560,7 @@ class TemplatePrimarySecondary extends LitElement {
 				width: 0.65rem;
 			}
 			:host([resizable]) .d2l-template-primary-secondary-divider {
+				background-color: var(--d2l-color-gypsum);
 				cursor: ew-resize;
 				width: 0.45rem;
 			}
@@ -641,7 +627,7 @@ class TemplatePrimarySecondary extends LitElement {
 				:host(:not([resizable])) .d2l-template-primary-secondary-divider {
 					background-color: var(--d2l-color-celestine);
 					cursor: ns-resize; /*resizer cursor*/
-					height: ${mobileDividerThickness}px;
+					height: 0.1rem;
 					width: 100%;
 				}
 				.d2l-template-primary-secondary-divider-handle {
@@ -746,8 +732,9 @@ class TemplatePrimarySecondary extends LitElement {
 		if (this._isMobile) {
 			this._size = this._contentBounds.minHeight;
 		} else {
-			const contentWidth = contentRect.width - desktopDividerThickness;
-			this._size = Math.max(desktopMinPanelSize, contentWidth * (1 / 3));
+			const divider = this.shadowRoot.querySelector('.d2l-template-primary-secondary-divider');
+			const desktopDividerSize = contentRect.width - divider.offsetWidth;
+			this._size = Math.max(desktopMinSize, desktopDividerSize * (1 / 3));
 		}
 		this._maxPanelHeight = this._contentBounds.maxHeight;
 	}
@@ -812,11 +799,14 @@ class TemplatePrimarySecondary extends LitElement {
 	}
 
 	_computeContentBounds(contentRect) {
+		const divider = this.shadowRoot.querySelector('.d2l-template-primary-secondary-divider');
+		const desktopDividerSize = divider.offsetWidth;
+		const mobileDividerSize = divider.offsetHeight;
 		return {
-			minWidth: desktopMinPanelSize,
-			maxWidth: contentRect.width - desktopMinPanelSize - desktopDividerThickness,
-			minHeight: (contentRect.height - mobileDividerThickness) * (1 / 3),
-			maxHeight: (contentRect.height - mobileDividerThickness) * (2 / 3)
+			minWidth: desktopMinSize,
+			maxWidth: contentRect.width - desktopMinSize - desktopDividerSize,
+			minHeight: (contentRect.height - mobileDividerSize) * (1 / 3),
+			maxHeight: (contentRect.height - mobileDividerSize) * (2 / 3)
 		};
 	}
 
@@ -854,6 +844,7 @@ class TemplatePrimarySecondary extends LitElement {
 		}
 		for (const resizer of this._resizers) {
 			resizer.contentRect = contentRect;
+			resizer.contentBounds = this._contentBounds;
 			resizer.isMobile = this._isMobile;
 		}
 	}
