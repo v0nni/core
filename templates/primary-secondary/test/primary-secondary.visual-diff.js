@@ -98,4 +98,89 @@ describe('d2l-template-primary-secondary', () => {
 			});
 		});
 	});
+
+	describe('desktop', () => {
+
+		before(async() => {
+			browser = await puppeteer.launch();
+			page = await visualDiff.createPage(browser, { viewport: { width: 1000, height: 3000 } });
+			await page.goto(`${visualDiff.getBaseUrl()}/templates/primary-secondary/test/primary-secondary-desktop.visual-diff.html`, { waitUntil: ['networkidle0', 'load'] });
+			await page.bringToFront();
+		});
+
+		after(async() => await browser.close());
+
+		[
+			{
+				testName: 'fixed',
+				options: {}
+			},
+			{
+				testName: 'resizable',
+				options: {}
+			},
+			{
+				testName: 'expanded',
+				options: { position: { dir: directions.LEFT, n: 10 } }
+			},
+			{
+				testName: 'collapsed',
+				options: { position: { dir: directions.RIGHT, n: 5 } }
+			},
+			{
+				testName: 'focus',
+				options: { focus: true }
+			},
+			{
+				testName: 'focus-expanded',
+				options: { focus: true, position: { dir: directions.LEFT, n: 10 } }
+			},
+			{
+				testName: 'focus-collapsed',
+				options: { focus: true, position: { dir: directions.RIGHT, n: 5 } }
+			},
+			{
+				testName: 'focus-collapsed-rtl',
+				options: { focus: true, position: { dir: directions.RIGHT, n: 5 } }
+			},
+			{
+				testName: 'focus-expanded-rtl',
+				options: { focus: true, position: { dir: directions.LEFT, n: 10 } }
+			},
+			{
+				testName: 'background-shading-primary',
+				options: {}
+			},
+			{
+				testName: 'background-shading-primary-rtl',
+				options: {}
+			},
+			{
+				testName: 'background-shading-secondary',
+				options: {}
+			},
+			{
+				testName: 'background-shading-secondary-rtl',
+				options: {}
+			},
+			{
+				testName: 'hidden-footer',
+				options: {}
+			},
+		].forEach((test) => {
+			it(test.testName, async function() {
+				await page.bringToFront();
+				const sel = `#${test.testName}`;
+				if (test.options.position) {
+					const pos = test.options.position;
+					await moveDivider(page, sel, pos.dir, pos.n);
+				}
+				if (test.options.focus) {
+					await focusHandle(page, sel);
+				}
+				const rect = await getRect(page, sel);
+				await visualDiff.screenshotAndCompare(page, this.test.fullTitle(), { clip: rect });
+			});
+		});
+	});
 });
