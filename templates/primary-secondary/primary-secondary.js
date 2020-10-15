@@ -451,7 +451,12 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 	static get styles() {
 		return css`
 			:host {
+				bottom: 0;
+				left: 0;
 				overflow: hidden;
+				position: absolute;
+				right: 0;
+				top: 0;
 			}
 			:host([hidden]) {
 				display: none;
@@ -465,11 +470,8 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 			.d2l-template-primary-secondary-container {
 				display: flex;
 				flex-direction: column;
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
+				height: 100%;
+				width: 100%;
 			}
 			.d2l-template-primary-secondary-content {
 				height: 100%;
@@ -644,6 +646,10 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 					right: calc(17px + 0.2rem);
 					top: auto;
 				}
+				:host([dir="rtl"]) .d2l-template-primary-secondary-divider-handle {
+					left: calc(17px + 0.2rem);
+					right: auto;
+				}
 				.d2l-template-primary-secondary-divider-handle-mobile {
 					align-items: center;
 					background-color: var(--d2l-color-celestine);
@@ -667,6 +673,10 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 					height: 1.2rem;
 					right: 17px;
 					width: 2.6rem;
+				}
+				:host([dir="rtl"]) .d2l-template-primary-secondary-divider-handle:focus {
+					left: 17px;
+					right: auto;
 				}
 				d2l-icon {
 					display: block;
