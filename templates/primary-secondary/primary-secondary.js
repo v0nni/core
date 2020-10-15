@@ -1,5 +1,6 @@
 import '../../components/colors/colors.js';
 import '../../components/icons/icon-custom.js';
+import '../../components/icons/icon.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import ResizeObserver from 'resize-observer-polyfill/dist/ResizeObserver.es.js';
 import { RtlMixin } from '../../mixins/rtl-mixin.js';
@@ -506,6 +507,7 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 				min-width: ${desktopMinSize}px;
 				overflow-y: auto;
 			}
+
 			/* prevent margin colapse on slotted children */
 			aside::before,
 			aside::after {
@@ -613,6 +615,10 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 				}
 				.d2l-template-primary-secondary-secondary-container {
 					flex: none;
+				}
+				aside,
+				.d2l-template-primary-secondary-secondary-container {
+					min-width: auto;
 				}
 
 				.d2l-template-primary-secondary-divider-handle-desktop {
