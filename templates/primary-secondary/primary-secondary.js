@@ -52,14 +52,6 @@ class Resizer {
 	onResize(callback) {
 		this._onResizeCallback = callback;
 	}
-
-	onResizeEnd(callback) {
-		this._onResizeEndCallback = callback;
-	}
-
-	onResizeStart(callback) {
-		this._onResizeStartCallback = callback;
-	}
 }
 
 class DesktopKeyboardResizer extends Resizer {
@@ -694,7 +686,7 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 		super();
 
 		this._onContentResize = this._onContentResize.bind(this);
-		this._onResize = this._onResize.bind(this);
+		this._onPanelResize = this._onPanelResize.bind(this);
 
 		this._desktopMouseResizer = new DesktopMouseResizer();
 		this._desktopKeyboardResizer = new DesktopKeyboardResizer();
@@ -710,7 +702,7 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 			this._desktopKeyboardResizer
 		];
 		for (const resizer of this._resizers) {
-			resizer.onResize(this._onResize);
+			resizer.onResize(this._onPanelResize);
 		}
 
 		this._size = 0;
@@ -902,7 +894,7 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 		this._isHandleTap = true;
 	}
 
-	_onResize(e) {
+	_onPanelResize(e) {
 		if (this._isResizable()) {
 			if (e.size > 0) {
 				this._isCollapsed = false;
