@@ -54,46 +54,16 @@ describe('d2l-template-primary-secondary', () => {
 		after(async() => await browser.close());
 
 		[
-			{
-				testName: 'default',
-				options: {}
-			},
-			{
-				testName: 'focus',
-				options: { focus: true }
-			},
-			{
-				testName: 'rtl',
-				options: {}
-			},
-			{
-				testName: 'focus-rtl',
-				options: { focus: true }
-			},
-			{
-				testName: 'expanded',
-				options: { position: { dir: directions.UP, steps: 5 } }
-			},
-			{
-				testName: 'middle',
-				options: { position: { dir: directions.UP, steps: 1 } }
-			},
-			{
-				testName: 'collapsed',
-				options: { position: { dir: directions.DOWN, steps: 5 } }
-			},
-			{
-				testName: 'hidden-footer',
-				options: {}
-			},
-			{
-				testName: 'hidden-footer-expanded',
-				options: { position: { dir: directions.UP, steps: 5 } }
-			},
-			{
-				testName: 'hidden-footer-collapsed',
-				options: { position: { dir: directions.DOWN, steps: 5 } }
-			},
+			{ testName: 'default', options: {} },
+			{ testName: 'focus', options: { focus: true } },
+			{ testName: 'rtl', options: {} },
+			{ testName: 'focus-rtl', options: { focus: true } },
+			{ testName: 'expanded', options: { position: { dir: directions.UP, steps: 5 } } },
+			{ testName: 'middle', options: { position: { dir: directions.UP, steps: 1 } } },
+			{ testName: 'collapsed', options: { position: { dir: directions.DOWN, steps: 5 } } },
+			{ testName: 'hidden-footer', options: {} },
+			{ testName: 'hidden-footer-expanded', options: { position: { dir: directions.UP, steps: 5 } } },
+			{ testName: 'hidden-footer-collapsed', options: { position: { dir: directions.DOWN, steps: 5 } } },
 		].forEach((test) => {
 			it(test.testName, async function() {
 				await page.bringToFront();
@@ -123,74 +93,23 @@ describe('d2l-template-primary-secondary', () => {
 		after(async() => await browser.close());
 
 		[
-			{
-				testName: 'fixed',
-				options: {}
-			},
-			{
-				testName: 'resizable',
-				options: {}
-			},
-			{
-				testName: 'expanded',
-				options: { position: { dir: directions.LEFT, steps: 10 } }
-			},
-			{
-				testName: 'collapsed',
-				options: { position: { dir: directions.RIGHT, steps: 5 } }
-			},
-			{
-				testName: 'focus',
-				options: { focus: true }
-			},
-			{
-				testName: 'focus-expanded',
-				options: { focus: true, position: { dir: directions.LEFT, steps: 10 } }
-			},
-			{
-				testName: 'focus-collapsed',
-				options: { focus: true, position: { dir: directions.RIGHT, steps: 5 } }
-			},
-			{
-				testName: 'focus-collapsed-rtl',
-				options: { focus: true, position: { dir: directions.RIGHT, steps: 5 } }
-			},
-			{
-				testName: 'focus-expanded-rtl',
-				options: { focus: true, position: { dir: directions.LEFT, steps: 10 } }
-			},
-			{
-				testName: 'background-shading-primary',
-				options: {}
-			},
-			{
-				testName: 'background-shading-primary-rtl',
-				options: {}
-			},
-			{
-				testName: 'background-shading-secondary',
-				options: {}
-			},
-			{
-				testName: 'background-shading-secondary-rtl',
-				options: {}
-			},
-			{
-				testName: 'hidden-footer',
-				options: {}
-			},
-			{
-				testName: 'width-fullscreen',
-				options: {}
-			},
-			{
-				testName: 'width-normal',
-				options: {}
-			},
-			{
-				testName: 'width-normal-collapsed',
-				options: { focus: true, position: { dir: directions.RIGHT, steps: 5 } }
-			},
+			{ testName: 'fixed', options: {} },
+			{ testName: 'resizable', options: {} },
+			{ testName: 'expanded', options: { position: { dir: directions.LEFT, steps: 10 } } },
+			{ testName: 'collapsed', options: { position: { dir: directions.RIGHT, steps: 5 } } },
+			{ testName: 'focus', options: { focus: true } },
+			{ testName: 'focus-expanded', options: { focus: true, position: { dir: directions.LEFT, steps: 10 } } },
+			{ testName: 'focus-collapsed', options: { focus: true, position: { dir: directions.RIGHT, steps: 5 } } },
+			{ testName: 'focus-collapsed-rtl', options: { focus: true, position: { dir: directions.RIGHT, steps: 5 } } },
+			{ testName: 'focus-expanded-rtl', options: { focus: true, position: { dir: directions.LEFT, steps: 10 } } },
+			{ testName: 'background-shading-primary', options: {} },
+			{ testName: 'background-shading-primary-rtl', options: {} },
+			{ testName: 'background-shading-secondary', options: {} },
+			{ testName: 'background-shading-secondary-rtl', options: {} },
+			{ testName: 'hidden-footer', options: {} },
+			{ testName: 'width-fullscreen', options: {} },
+			{ testName: 'width-normal', options: {} },
+			{ testName: 'width-normal-collapsed', options: { focus: true, position: { dir: directions.RIGHT, steps: 5 } } },
 		].forEach((test) => {
 			it(test.testName, async function() {
 				await page.bringToFront();
