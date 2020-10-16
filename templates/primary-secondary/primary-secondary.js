@@ -27,12 +27,12 @@ function clamp(val, min, max) {
 
 class Resizer {
 
-	constructor(isRtl) {
+	constructor() {
 		this.contentRect = null;
 		this.contentBounds = null;
 		this.isMobile = false;
 		this.panelSize = 0;
-		this.isRtl = isRtl;
+		this.isRtl = false;
 	}
 
 	clampHeight(height) {
@@ -64,11 +64,9 @@ class Resizer {
 
 class DesktopKeyboardResizer extends Resizer {
 
-	constructor(isRtl) {
-		super(isRtl);
+	constructor() {
+		super();
 		this._onKeyDown = this._onKeyDown.bind(this);
-		this._leftKeyCode = this.isRtl ? keyCodes.RIGHT : keyCodes.LEFT;
-		this._rightKeyCode = this.isRtl ? keyCodes.LEFT : keyCodes.RIGHT;
 	}
 
 	connect(target) {
@@ -84,19 +82,21 @@ class DesktopKeyboardResizer extends Resizer {
 		if (this.isMobile) {
 			return;
 		}
-		if (e.keyCode !== this._leftKeyCode && e.keyCode !== this._rightKeyCode) {
+		const leftKeyCode = this.isRtl ? keyCodes.RIGHT : keyCodes.LEFT;
+		const rightKeyCode = this.isRtl ? keyCodes.LEFT : keyCodes.RIGHT;
+		if (e.keyCode !== leftKeyCode && e.keyCode !== rightKeyCode) {
 			return;
 		}
 		let secondaryWidth;
 		if (this.panelSize === 0) {
-			if (e.keyCode === this._leftKeyCode) {
+			if (e.keyCode === leftKeyCode) {
 				secondaryWidth = this.contentBounds.minWidth;
 			} else {
 				secondaryWidth = 0;
 			}
 		} else {
 			const delta = (this.contentBounds.maxWidth - this.contentBounds.minWidth) / 6;
-			const direction = e.keyCode === this._leftKeyCode ? 1 : -1;
+			const direction = e.keyCode === leftKeyCode ? 1 : -1;
 			const desiredWidth = this.panelSize + delta * direction;
 			const desiredSteppedWidth = this.contentBounds.minWidth + delta * Math.round((desiredWidth - this.contentBounds.minWidth) / delta);
 
@@ -113,8 +113,8 @@ class DesktopKeyboardResizer extends Resizer {
 
 class DesktopMouseResizer extends Resizer {
 
-	constructor(isRtl) {
-		super(isRtl);
+	constructor() {
+		super();
 		this._onTouchStart = this._onTouchStart.bind(this);
 		this._onMouseDown = this._onMouseDown.bind(this);
 		this._onTouchMove = this._onTouchMove.bind(this);
@@ -206,8 +206,8 @@ class DesktopMouseResizer extends Resizer {
 
 class MobileKeyboardResizer extends Resizer {
 
-	constructor(isRtl) {
-		super(isRtl);
+	constructor() {
+		super();
 		this._steps = 3;
 		this._onKeyDown = this._onKeyDown.bind(this);
 	}
@@ -254,8 +254,8 @@ class MobileKeyboardResizer extends Resizer {
 
 class MobileMouseResizer extends Resizer {
 
-	constructor(isRtl) {
-		super(isRtl);
+	constructor() {
+		super();
 		this._onMouseDown = this._onMouseDown.bind(this);
 		this._onMouseMove = this._onMouseMove.bind(this);
 		this._onMouseUp = this._onMouseUp.bind(this);
@@ -312,8 +312,8 @@ class MobileMouseResizer extends Resizer {
 }
 
 class MobileTouchResizer extends Resizer {
-	constructor(isRtl) {
-		super(isRtl);
+	constructor() {
+		super();
 		this._onResizeStart = this._onResizeStart.bind(this);
 		this._onTouchMove = this._onTouchMove.bind(this);
 		this._onResizeEnd = this._onResizeEnd.bind(this);
@@ -696,12 +696,11 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 		this._onContentResize = this._onContentResize.bind(this);
 		this._onResize = this._onResize.bind(this);
 
-		const isRtl = document.documentElement.getAttribute('dir') === 'rtl';
-		this._desktopMouseResizer = new DesktopMouseResizer(isRtl);
-		this._desktopKeyboardResizer = new DesktopKeyboardResizer(isRtl);
-		this._mobileKeyboardResizer = new MobileKeyboardResizer(isRtl);
-		this._mobileTouchResizer = new MobileTouchResizer(isRtl);
-		this._mobileMouseResizer = new MobileMouseResizer(isRtl);
+		this._desktopMouseResizer = new DesktopMouseResizer();
+		this._desktopKeyboardResizer = new DesktopKeyboardResizer();
+		this._mobileKeyboardResizer = new MobileKeyboardResizer();
+		this._mobileTouchResizer = new MobileTouchResizer();
+		this._mobileMouseResizer = new MobileMouseResizer();
 
 		this._resizers = [
 			this._desktopMouseResizer,
@@ -745,8 +744,13 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 	}
 
 	async firstUpdated(changedProperties) {
+
 		super.firstUpdated(changedProperties);
 
+		const isRtl = this.getAttribute('dir') === 'rtl';
+		for (const resizer of this._resizers) {
+			resizer.isRtl = isRtl;
+		}
 		const contentArea = this.shadowRoot.querySelector('.d2l-template-primary-secondary-content');
 		this._resizeObserver = new ResizeObserver(this._onContentResize);
 		this._resizeObserver.observe(contentArea);
