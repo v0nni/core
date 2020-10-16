@@ -13,14 +13,14 @@ describe('d2l-template-primary-secondary', () => {
 		DOWN: 40
 	});
 
-	async function moveDivider(page, selector, dir, n) {
-		return page.$eval(selector, (ele, dir, n) => {
+	async function moveDivider(page, selector, dir, steps) {
+		return page.$eval(selector, (ele, dir, steps) => {
 			const handle = ele.shadowRoot.querySelector('.d2l-template-primary-secondary-divider-handle');
 			const e = new KeyboardEvent('keydown', { keyCode: dir });
-			for (let i = 0; i < n; i += 1) {
+			for (let i = 0; i < steps; i += 1) {
 				handle.dispatchEvent(e);
 			}
-		}, dir, n);
+		}, dir, steps);
 	}
 
 	async function getRect(page, selector) {
@@ -72,15 +72,15 @@ describe('d2l-template-primary-secondary', () => {
 			},
 			{
 				testName: 'expanded',
-				options: { position: { dir: directions.UP, n: 5 } }
+				options: { position: { dir: directions.UP, steps: 5 } }
 			},
 			{
 				testName: 'middle',
-				options: { position: { dir: directions.UP, n: 1 } }
+				options: { position: { dir: directions.UP, steps: 1 } }
 			},
 			{
 				testName: 'collapsed',
-				options: { position: { dir: directions.DOWN, n: 5 } }
+				options: { position: { dir: directions.DOWN, steps: 5 } }
 			},
 			{
 				testName: 'hidden-footer',
@@ -88,11 +88,11 @@ describe('d2l-template-primary-secondary', () => {
 			},
 			{
 				testName: 'hidden-footer-expanded',
-				options: { position: { dir: directions.UP, n: 5 } }
+				options: { position: { dir: directions.UP, steps: 5 } }
 			},
 			{
 				testName: 'hidden-footer-collapsed',
-				options: { position: { dir: directions.DOWN, n: 5 } }
+				options: { position: { dir: directions.DOWN, steps: 5 } }
 			},
 		].forEach((test) => {
 			it(test.testName, async function() {
@@ -133,11 +133,11 @@ describe('d2l-template-primary-secondary', () => {
 			},
 			{
 				testName: 'expanded',
-				options: { position: { dir: directions.LEFT, n: 10 } }
+				options: { position: { dir: directions.LEFT, steps: 10 } }
 			},
 			{
 				testName: 'collapsed',
-				options: { position: { dir: directions.RIGHT, n: 5 } }
+				options: { position: { dir: directions.RIGHT, steps: 5 } }
 			},
 			{
 				testName: 'focus',
@@ -145,19 +145,19 @@ describe('d2l-template-primary-secondary', () => {
 			},
 			{
 				testName: 'focus-expanded',
-				options: { focus: true, position: { dir: directions.LEFT, n: 10 } }
+				options: { focus: true, position: { dir: directions.LEFT, steps: 10 } }
 			},
 			{
 				testName: 'focus-collapsed',
-				options: { focus: true, position: { dir: directions.RIGHT, n: 5 } }
+				options: { focus: true, position: { dir: directions.RIGHT, steps: 5 } }
 			},
 			{
 				testName: 'focus-collapsed-rtl',
-				options: { focus: true, position: { dir: directions.RIGHT, n: 5 } }
+				options: { focus: true, position: { dir: directions.RIGHT, steps: 5 } }
 			},
 			{
 				testName: 'focus-expanded-rtl',
-				options: { focus: true, position: { dir: directions.LEFT, n: 10 } }
+				options: { focus: true, position: { dir: directions.LEFT, steps: 10 } }
 			},
 			{
 				testName: 'background-shading-primary',
@@ -185,7 +185,7 @@ describe('d2l-template-primary-secondary', () => {
 				const sel = `#${test.testName}`;
 				if (test.options.position) {
 					const pos = test.options.position;
-					await moveDivider(page, sel, pos.dir, pos.n);
+					await moveDivider(page, sel, pos.dir, pos.steps);
 				}
 				if (test.options.focus) {
 					await focusHandle(page, sel);
