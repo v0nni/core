@@ -822,12 +822,12 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 	}
 
 	set _size(val) {
-		const oldHeight = this.__size;
+		const oldSize = this.__size;
 		this.__size = val;
 		for (const resizer of this._resizers) {
 			resizer.panelSize = val;
 		}
-		this.requestUpdate('_size', oldHeight);
+		this.requestUpdate('_size', oldSize);
 	}
 
 	_computeContentBounds(contentRect) {
