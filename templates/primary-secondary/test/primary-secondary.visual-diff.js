@@ -82,6 +82,18 @@ describe('d2l-template-primary-secondary', () => {
 				testName: 'collapsed',
 				options: { position: { dir: directions.DOWN, n: 5 } }
 			},
+			{
+				testName: 'hidden-footer',
+				options: {}
+			},
+			{
+				testName: 'hidden-footer-expanded',
+				options: { position: { dir: directions.UP, n: 5 } }
+			},
+			{
+				testName: 'hidden-footer-collapsed',
+				options: { position: { dir: directions.DOWN, n: 5 } }
+			},
 		].forEach((test) => {
 			it(test.testName, async function() {
 				await page.bringToFront();
