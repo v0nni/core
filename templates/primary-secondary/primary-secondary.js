@@ -516,7 +516,7 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 			}
 			.d2l-template-primary-secondary-divider,
 			.d2l-template-primary-secondary-divider-handle-mobile {
-				transition: background-color 200ms;
+				transition: background-color 200ms, box-shadow 200ms;
 			}
 			.d2l-template-primary-secondary-divider {
 				background-color: var(--d2l-color-mica);
@@ -548,6 +548,22 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 			:host([resizable]) .d2l-template-primary-secondary-divider-handle {
 				cursor: inherit;
 				display: block;
+			}
+			:host([resizable]) [data-background-shading="secondary"] .d2l-template-primary-secondary-divider,
+			:host([resizable][dir="rtl"]) [data-background-shading="primary"] .d2l-template-primary-secondary-divider {
+				box-shadow: 1px 0 0 0 rgba(0,0,0,0.15);
+			}
+			:host([resizable]) [data-background-shading="primary"] .d2l-template-primary-secondary-divider,
+			:host([resizable][dir="rtl"]) [data-background-shading="secondary"] .d2l-template-primary-secondary-divider {
+				box-shadow: -1px 0 0 0 rgba(0,0,0,0.15);
+			}
+			:host([resizable]) [data-background-shading="secondary"] .d2l-template-primary-secondary-divider:hover,
+			:host([resizable][dir="rtl"]) [data-background-shading="primary"] .d2l-template-primary-secondary-divider:hover {
+				box-shadow: 1px 0 0 0 rgba(0,0,0,0.25);
+			}
+			:host([resizable]) [data-background-shading="primary"] .d2l-template-primary-secondary-divider:hover,
+			:host([resizable][dir="rtl"]) [data-background-shading="secondary"] .d2l-template-primary-secondary-divider:hover {
+				box-shadow: -1px 0 0 0 rgba(0,0,0,0.25);
 			}
 			.d2l-template-primary-secondary-divider-handle-desktop {
 				display: flex;
@@ -596,6 +612,12 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 			}
 			header, footer {
 				z-index: 2; /* ensures the footer box-shadow is over main areas with background colours set */
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.d2l-template-primary-secondary-divider,
+				.d2l-template-primary-secondary-divider-handle-mobile {
+					transition: none;
+				}
 			}
 			@media only screen and (max-width: 768px) {
 
