@@ -435,7 +435,6 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 			_isCollapsed: { type: Boolean, attribute: false },
 			_isExpanded: { type: Boolean, attribute: false },
 			_isMobile: { type: Boolean, attribute: false },
-			_maxPanelHeight: { type: Number, attribute: false },
 			_size: { type: Number, attribute: false }
 		};
 	}
@@ -705,13 +704,15 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 			resizer.onResize(this._onPanelResize);
 		}
 
-		this._size = 0;
+		this.backgroundShading = 'none';
+		this.resizable = false;
+		this.widthType = 'fullscreen';
+
 		this._animateResize = false;
 		this._isCollapsed = false;
 		this._isExpanded = false;
-		this.widthType = 'fullscreen';
-		this.backgroundShading = 'none';
-		this.resizable = false;
+		this._isMobile = isMobile();
+		this._size = 0;
 	}
 
 	async connectedCallback() {
@@ -750,7 +751,6 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 		await this.updateComplete;
 		const contentRect = contentArea.getBoundingClientRect();
 		this._contentBounds = this._computeContentBounds(contentRect);
-		this._isMobile = isMobile();
 
 		if (this._isMobile) {
 			this._size = this._contentBounds.minHeight;
@@ -759,7 +759,6 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 			const desktopDividerSize = contentRect.width - divider.offsetWidth;
 			this._size = Math.max(desktopMinSize, desktopDividerSize * (1 / 3));
 		}
-		this._maxPanelHeight = this._contentBounds.maxHeight;
 	}
 
 	render() {
@@ -767,9 +766,6 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 		if (this._isResizable()) {
 			secondaryPanelStyles[this._isMobile ? 'height' : 'width'] = `${this._size}px`;
 		}
-		const secondaryStyles = {
-			height: this._isMobile ? `${this._maxPanelHeight}px` : null
-		};
 		return html`
 			<div class="d2l-template-primary-secondary-container">
 				<header><slot name="header"></slot></header>
@@ -797,7 +793,7 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 						</button>
 					</div>
 					<div style=${styleMap(secondaryPanelStyles)} class="d2l-template-primary-secondary-secondary-container" @transitionend=${this._onTransitionEnd}>
-						<aside style=${styleMap(secondaryStyles)}>
+						<aside>
 							<slot name="secondary"></slot>
 						</aside>
 					</div>
@@ -856,7 +852,6 @@ class TemplatePrimarySecondary extends RtlMixin(LitElement) {
 		const entry = entries[0];
 		const contentRect = entry.target.getBoundingClientRect();
 		this._contentBounds = this._computeContentBounds(contentRect);
-		this._maxPanelHeight = this._contentBounds.maxHeight;
 		this._isMobile = isMobile();
 
 		if (this._size !== 0) {
