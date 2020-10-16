@@ -115,7 +115,7 @@ describe('d2l-template-primary-secondary', () => {
 
 		before(async() => {
 			browser = await puppeteer.launch();
-			page = await visualDiff.createPage(browser, { viewport: { width: 1000, height: 3000 } });
+			page = await visualDiff.createPage(browser, { viewport: { width: 1500, height: 4000 } });
 			await page.goto(`${visualDiff.getBaseUrl()}/templates/primary-secondary/test/primary-secondary-desktop.visual-diff.html`, { waitUntil: ['networkidle0', 'load'] });
 			await page.bringToFront();
 		});
@@ -178,6 +178,18 @@ describe('d2l-template-primary-secondary', () => {
 			{
 				testName: 'hidden-footer',
 				options: {}
+			},
+			{
+				testName: 'width-fullscreen',
+				options: {}
+			},
+			{
+				testName: 'width-normal',
+				options: {}
+			},
+			{
+				testName: 'width-normal-collapsed',
+				options: { focus: true, position: { dir: directions.RIGHT, steps: 5 } }
 			},
 		].forEach((test) => {
 			it(test.testName, async function() {
