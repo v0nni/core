@@ -6,7 +6,7 @@ import { spy } from 'sinon';
 const viewsFixture = html`
 	<div>
 		<div id="parent">
-			<a id="previous_focusable" tabindex="0"></a>
+			<a id="previous_focusable" href="https://www.d2l.com">stuff</a>
 			<d2l-hierarchical-view id="view1">
 				<div id="view1_content" tabindex="0">view 1</div>
 				<d2l-hierarchical-view id="view2">

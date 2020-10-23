@@ -1,10 +1,17 @@
 {
-  "extends": "brightspace/lit-config",
+  "extends": ["brightspace/lit-config","plugin:lit-a11y/recommended"],
   "globals": {
     "Prism": false
   },
+  "plugins": ["lit-a11y"],
   "rules": {
-    "linebreak-style": ["error", "unix"]
+    "linebreak-style": ["error", "unix"],
+    "lit-a11y/click-events-have-key-events": [
+      "error",
+      {
+        "allowList": ["d2l-button-icon"]
+      }
+    ]
   },
   "overrides": [{
     "files": [

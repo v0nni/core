@@ -61,6 +61,7 @@
     "eslint-config-brightspace": "^0.11.0",
     "eslint-plugin-html": "^6",
     "eslint-plugin-lit": "^1",
+    "eslint-plugin-lit-a11y": "^1",
     "eslint-plugin-sort-class-members": "^1",
     "karma-browserstack-launcher": "~1.4.0",
     "karma-sauce-launcher": "^2",
